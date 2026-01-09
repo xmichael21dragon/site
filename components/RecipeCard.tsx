@@ -10,14 +10,14 @@ interface RecipeCardProps {
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
   return (
     <div 
-      className="group bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer"
+      className="group bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
       onClick={onClick}
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 recipe-card-img-container">
         <img 
           src={recipe.image} 
           alt={recipe.title} 
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="px-2 py-1 bg-white/90 backdrop-blur-sm text-[10px] font-bold text-red-600 uppercase tracking-wider rounded-md shadow-sm">
@@ -34,7 +34,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
 
       <div className="p-5">
         <p className="text-red-600 text-[10px] font-bold uppercase tracking-widest mb-1">{recipe.category}</p>
-        <h3 className="text-lg font-bold text-stone-800 mb-2 line-clamp-1 group-hover:text-red-600 transition-colors">
+        <h3 className="text-lg font-bold text-stone-800 mb-2 line-clamp-1 group-hover:text-red-600 transition-colors duration-300">
           {recipe.title}
         </h3>
         <p className="text-sm text-stone-500 line-clamp-2 mb-4">
@@ -52,7 +52,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
               {recipe.difficulty}
             </span>
           </div>
-          <button className="w-8 h-8 rounded-full bg-stone-50 text-stone-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors">
+          <button className="w-8 h-8 rounded-full bg-stone-50 text-stone-400 flex items-center justify-center hover:bg-red-600 hover:text-white transition-colors duration-300">
             <i className="fa-solid fa-plus text-xs"></i>
           </button>
         </div>

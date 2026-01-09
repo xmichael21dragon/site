@@ -55,19 +55,18 @@ export interface Article {
   excerpt: string;
   content: string;
   image: string;
-  category: 'Doenças' | 'Nutrição' | 'Bem-estar' | 'Mental';
+  // Added 'Saúde Geral' to the category union type to fix the error in constants.ts where this value is used.
+  category: 'Doenças' | 'Nutrição' | 'Bem-estar' | 'Mental' | 'Saúde Geral';
   date: string;
   readTime: string;
   author: string;
 }
 
+export type MealSlotType = 'Café da Manhã' | 'Lanche da Manhã' | 'Almoço' | 'Lanche da Tarde' | 'Jantar';
+
 export interface MealPlanDay {
   day: string;
-  meals: {
-    id: string;
-    recipeId: string;
-    type: 'Café da Manhã' | 'Almoço' | 'Jantar' | 'Lanche';
-  }[];
+  meals: Record<MealSlotType, string | null>; // Mapeia o tipo de refeição para o ID da receita
 }
 
 export type MealPlan = MealPlanDay[];
