@@ -1,7 +1,11 @@
 
 import React from 'react';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onEditorClick?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onEditorClick }) => {
   return (
     <footer className="bg-white border-t border-stone-100 pt-16 pb-8 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -70,18 +74,18 @@ const Footer: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Newsletter</h4>
-            <p className="text-xs text-stone-500 mb-4">Receba dicas exclusivas no seu e-mail.</p>
-            <form className="relative" onSubmit={(e) => e.preventDefault()}>
-              <input 
-                type="email" 
-                placeholder="Seu melhor e-mail"
-                className="w-full px-4 py-3 rounded-2xl bg-stone-50 border-none text-xs focus:ring-2 focus:ring-[#2e7d32]"
-              />
-              <button className="absolute right-2 top-2 bottom-2 bg-[#2e7d32] text-white px-3 rounded-xl hover:bg-[#1b5e20] transition-colors">
-                <i className="fa-solid fa-paper-plane"></i>
-              </button>
-            </form>
+            <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Administração</h4>
+            <ul className="space-y-3 text-sm text-stone-500 font-medium">
+              <li>
+                <button 
+                  onClick={onEditorClick}
+                  className="flex items-center gap-2 text-stone-400 hover:text-red-600 transition-colors"
+                >
+                  <i className="fa-solid fa-pen-to-square"></i> Área do Autor
+                </button>
+              </li>
+              <li><a href="#" className="hover:text-stone-800">Suporte Técnico</a></li>
+            </ul>
           </div>
         </div>
 
