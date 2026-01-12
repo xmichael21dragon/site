@@ -13,43 +13,75 @@ import WeightConverter from './components/WeightConverter';
 import PostCarousel from './components/PostCarousel';
 import SobreNos from './components/SobreNos';
 import ContentEditor from './components/ContentEditor';
+import TermsOfUse from './components/TermsOfUse';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import AdBanner from './components/AdBanner';
 
-type View = 'home' | 'recipe' | 'planner' | 'imc' | 'receitas' | 'sobre' | 'conversor' | 'saude' | 'article' | 'editor';
+type View = 'home' | 'recipe' | 'planner' | 'imc' | 'receitas' | 'sobre' | 'conversor' | 'saude' | 'article' | 'editor' | 'termos' | 'privacidade';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('home');
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
+  const [allArticles, setAllArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    const isInitialized = localStorage.getItem('ss_initialized');
+    if (!isInitialized) {
+      localStorage.setItem('ss_custom_recipes', JSON.stringify(MOCK_RECIPES));
+      localStorage.setItem('ss_custom_articles', JSON.stringify(MOCK_ARTICLES));
+      localStorage.setItem('ss_initialized', 'true');
+    }
+    const loadData = () => {
+      const localRecipes = JSON.parse(localStorage.getItem('ss_custom_recipes') || '[]');
+      const localArticles = JSON.parse(localStorage.getItem('ss_custom_articles') || '[]');
+      setAllRecipes(localRecipes);
+      setAllArticles(localArticles);
+    };
+    loadData();
+    window.addEventListener('storage', loadData);
+    return () => window.removeEventListener('storage', loadData);
+  }, [currentView]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentView]);
 
   const filteredRecipes = useMemo(() => {
-    return MOCK_RECIPES.filter(r => 
+    return allRecipes.filter(r => 
       r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.category.toLowerCase().includes(searchQuery.toLowerCase())
+      r.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.subcategory.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery]);
+  }, [searchQuery, allRecipes]);
+
+  const groupedRecipes = useMemo<Record<string, Recipe[]>>(() => {
+    return filteredRecipes.reduce((acc, recipe) => {
+      const key = recipe.subcategory || 'Diversos';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(recipe);
+      return acc;
+    }, {} as Record<string, Recipe[]>);
+  }, [filteredRecipes]);
 
   const filteredArticles = useMemo(() => {
-    return MOCK_ARTICLES.filter(a => 
+    return allArticles.filter(a => 
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery]);
+  }, [searchQuery, allArticles]);
 
   const recentPosts = useMemo(() => {
-    const recipes = searchQuery ? filteredRecipes : MOCK_RECIPES.slice(0, 3);
-    const articles = searchQuery ? filteredArticles : MOCK_ARTICLES.slice(0, 3);
-    
     const combined = [
-      ...recipes.map(r => ({ ...r, type: 'recipe' })),
-      ...articles.map(a => ({ ...a, type: 'article' }))
+      ...allRecipes.map(r => ({ ...r, type: 'recipe' })),
+      ...allArticles.map(a => ({ ...a, x_type: 'article' }))
     ];
-    return searchQuery ? combined : combined.sort(() => Math.random() - 0.5);
-  }, [searchQuery, filteredRecipes, filteredArticles]);
+    // @ts-ignore
+    return combined.slice(-6).reverse();
+  }, [allRecipes, allArticles]);
 
   const handleRecipeClick = (recipe: Recipe) => {
     setSelectedRecipe(recipe);
@@ -61,36 +93,79 @@ const App: React.FC = () => {
     setCurrentView('article');
   };
 
+  const SearchInput = ({ placeholder }: { placeholder: string }) => (
+    <div className="relative w-full max-w-2xl group">
+      <i className="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-stone-400 text-xl group-focus-within:text-red-500 transition-colors"></i>
+      <input 
+        type="text" 
+        placeholder={placeholder}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="w-full bg-white border-2 border-stone-100 focus:border-red-500/20 rounded-[2rem] py-6 pl-16 pr-8 text-xl text-stone-800 font-bold shadow-sm outline-none transition-all placeholder:text-stone-300"
+      />
+    </div>
+  );
+
   const renderContent = () => {
     switch (currentView) {
       case 'recipe': return selectedRecipe ? <RecipeDetail recipe={selectedRecipe} onBack={() => setCurrentView('receitas')} /> : null;
       case 'article': return selectedArticle ? <ArticleDetail article={selectedArticle} onBack={() => setCurrentView('saude')} /> : null;
-      case 'planner': return <MealPlanner recipes={MOCK_RECIPES} onRecipeClick={handleRecipeClick} />;
+      case 'planner': return <MealPlanner recipes={allRecipes} onRecipeClick={handleRecipeClick} />;
       case 'imc': return <BMICalculator />;
       case 'conversor': return <WeightConverter />;
       case 'sobre': return <SobreNos />;
       case 'editor': return <ContentEditor onBack={() => setCurrentView('home')} />;
+      case 'termos': return <TermsOfUse onBack={() => setCurrentView('home')} />;
+      case 'privacidade': return <PrivacyPolicy onBack={() => setCurrentView('home')} />;
       case 'receitas':
+        const subcategoryEntries: [string, Recipe[]][] = Object.entries(groupedRecipes);
         return (
           <div className="max-w-7xl mx-auto px-4 py-16 animate-fade-in">
-            <h1 className="text-5xl font-black text-stone-800 mb-12 tracking-tighter">Explorar Receitas</h1>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {filteredRecipes.map(r => <RecipeCard key={r.id} recipe={r} onClick={() => handleRecipeClick(r)} />)}
+            <div className="text-center mb-20">
+              <h1 className="text-5xl md:text-7xl font-black text-stone-800 tracking-tighter mb-6 leading-none">Receitas Saudáveis</h1>
+              <p className="text-stone-500 font-medium mb-12 text-2xl italic">Equilíbrio e sabor em cada prato.</p>
+              <div className="flex justify-center">
+                <SearchInput placeholder="Ex: Massa, Fitness, Detox..." />
+              </div>
             </div>
+            <AdBanner className="mb-20" />
+            {subcategoryEntries.length > 0 ? subcategoryEntries.map(([subcategory, catRecipes], idx) => (
+              <React.Fragment key={subcategory}>
+                <div className="mb-20">
+                  <h2 className="text-sm font-black text-red-600 uppercase tracking-[0.4em] mb-10 border-b border-stone-100 pb-6">{subcategory}</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                    {catRecipes.map(r => <RecipeCard key={r.id} recipe={r} onClick={() => handleRecipeClick(r)} />)}
+                  </div>
+                </div>
+                {idx === 0 && subcategoryEntries.length > 1 && <AdBanner className="mb-20" />}
+              </React.Fragment>
+            )) : (
+              <div className="text-center py-40 bg-white rounded-[4rem] border-2 border-dashed border-stone-100">
+                <i className="fa-solid fa-utensils text-7xl text-stone-100 mb-8"></i>
+                <p className="text-stone-400 text-2xl font-bold">Nenhuma receita encontrada.</p>
+              </div>
+            )}
           </div>
         );
       case 'saude':
         return (
           <div className="max-w-7xl mx-auto px-4 py-16 animate-fade-in">
-            <h1 className="text-5xl font-black text-stone-800 mb-12 tracking-tighter">Bem-estar</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-10">
+              <div>
+                <h1 className="text-6xl font-black text-stone-800 tracking-tighter mb-4 leading-none">Saúde</h1>
+                <p className="text-stone-500 text-2xl font-medium">Artigos revisados para o seu bem-estar.</p>
+              </div>
+              <SearchInput placeholder="Pesquisar artigos..." />
+            </div>
+            <AdBanner className="mb-16" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20">
               {filteredArticles.map(a => (
-                <div key={a.id} onClick={() => handleArticleClick(a)} className="bg-white p-8 rounded-[2rem] border border-stone-100 flex gap-6 cursor-pointer hover:shadow-xl transition-all">
-                  <img src={a.image} className="w-40 h-40 rounded-2xl object-cover" alt={a.title} />
+                <div key={a.id} onClick={() => handleArticleClick(a)} className="bg-white p-10 rounded-[3rem] border border-stone-100 flex gap-8 cursor-pointer hover:shadow-2xl transition-all group">
+                  <img src={a.image} className="w-48 h-48 rounded-[2rem] object-cover shadow-md" alt={a.title} />
                   <div className="flex flex-col justify-center">
-                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">{a.category}</span>
-                    <h3 className="text-xl font-bold mb-3">{a.title}</h3>
-                    <p className="text-sm text-stone-500 line-clamp-2">{a.excerpt}</p>
+                    <span className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-3">{a.category}</span>
+                    <h3 className="text-2xl font-bold mb-4 group-hover:text-emerald-600 transition-colors leading-tight">{a.title}</h3>
+                    <p className="text-lg text-stone-500 line-clamp-2 leading-relaxed">{a.excerpt}</p>
                   </div>
                 </div>
               ))}
@@ -100,89 +175,63 @@ const App: React.FC = () => {
       case 'home':
       default:
         return (
-          <div className="space-y-32 pb-24 animate-fade-in">
-            {/* 1. Hero Section */}
-            {!searchQuery && (
-              <section className="max-w-7xl mx-auto px-4 pt-12">
-                 <div className="relative rounded-[3.5rem] overflow-hidden bg-stone-900 text-white min-h-[550px] flex items-center px-12 shadow-2xl">
-                    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=1200" className="absolute inset-0 w-full h-full object-cover opacity-40" alt="Gourmet Food" />
-                    <div className="relative z-10 max-w-2xl">
-                      <h2 className="text-6xl lg:text-8xl font-black mb-8 leading-none tracking-tighter">Saúde com Sabor.</h2>
-                      <p className="text-xl text-stone-300 mb-12 font-medium italic">A arte de nutrir o corpo com elegância e consciência.</p>
-                      <div className="flex gap-5">
-                        <button onClick={() => setCurrentView('receitas')} className="bg-red-600 px-10 py-5 rounded-2xl font-black hover:bg-red-700 transition-all text-lg active:scale-95">Descobrir Receitas</button>
-                        <button onClick={() => setCurrentView('planner')} className="bg-white text-stone-900 px-10 py-5 rounded-2xl font-black hover:bg-stone-100 transition-all text-lg active:scale-95">Plano Semanal</button>
-                      </div>
-                    </div>
-                 </div>
-              </section>
-            )}
-
-            {/* 2. Recent Posts Section */}
-            <section className="max-w-7xl mx-auto px-4">
-              <div className="flex items-center justify-between mb-16">
-                <div className="h-[1px] flex-grow bg-stone-200"></div>
-                <h3 className="px-8 text-xs font-black text-stone-400 uppercase tracking-[0.4em]">
-                  {searchQuery ? `Resultados para "${searchQuery}"` : 'Recém Saídos da Cozinha'}
-                </h3>
-                <div className="h-[1px] flex-grow bg-stone-200"></div>
+          <div className="space-y-12 md:space-y-24 pb-32 animate-fade-in">
+            <section className="max-w-7xl mx-auto px-4 pt-16">
+               <div className="relative rounded-[4rem] overflow-hidden bg-stone-900 text-white min-h-[600px] md:min-h-[750px] flex items-center px-10 md:px-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]">
+                  <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=1200" className="absolute inset-0 w-full h-full object-cover opacity-30 scale-105" alt="Gourmet Food" />
+                  <div className="relative z-10 w-full flex flex-col items-center text-center">
+                    <h2 className="text-5xl md:text-7xl lg:text-9xl font-black mb-10 leading-[0.9] tracking-tighter text-white drop-shadow-2xl">A sua saúde começa no prato.</h2>
+                    <p className="text-xl md:text-3xl text-stone-300 mb-16 font-medium italic max-w-3xl px-6 leading-relaxed">Inspiração culinária para uma vida longa e deliciosa.</p>
+                    <SearchInput placeholder="O que vamos cozinhar hoje?" />
+                  </div>
+               </div>
+            </section>
+            <AdBanner className="my-0" />
+            <section className="pt-8">
+              <div className="max-w-7xl mx-auto px-4 mb-10">
+                <h3 className="text-sm font-black text-stone-400 uppercase tracking-[0.5em] mb-4">Destaques da Semana</h3>
+                <div className="w-16 h-1.5 bg-red-600 rounded-full"></div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+              <PostCarousel 
+                items={recentPosts} 
+                onItemClick={(item: any) => item.x_type === 'article' ? handleArticleClick(item) : handleRecipeClick(item)} 
+              />
+            </section>
+            <AdBanner />
+            <section className="max-w-7xl mx-auto px-4 pt-12">
+              <div className="mb-16">
+                <h3 className="text-sm font-black text-stone-400 uppercase tracking-[0.5em] mb-4">Últimas Publicações</h3>
+                <div className="w-16 h-1.5 bg-stone-200 rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-24">
                 {recentPosts.map((post: any) => (
-                  <div 
-                    key={post.id} 
-                    onClick={() => post.type === 'recipe' ? handleRecipeClick(post) : handleArticleClick(post)}
-                    className="minimal-card group cursor-pointer"
-                  >
-                    <div className="relative h-64 overflow-hidden rounded-3xl mb-6">
-                      <img src={post.image} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" alt={post.title} />
-                      <div className="absolute top-4 left-4">
-                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase text-white ${post.type === 'recipe' ? 'bg-red-600' : 'bg-emerald-600'}`}>
-                          {post.type === 'recipe' ? 'Receita' : 'Artigo'}
-                        </span>
+                  <div key={post.id} onClick={() => post.x_type === 'article' ? handleArticleClick(post) : handleRecipeClick(post)} className="minimal-card group cursor-pointer">
+                    <div className="relative h-80 overflow-hidden rounded-[2.5rem] mb-8 shadow-md">
+                      <img src={post.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={post.title} />
+                      <div className="absolute top-6 left-6 bg-white/95 backdrop-blur px-4 py-1.5 rounded-xl shadow-sm">
+                        <span className="text-[10px] font-black text-stone-900 uppercase tracking-widest">{post.subcategory || post.category}</span>
                       </div>
                     </div>
                     <div>
-                      <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest mb-2 block">{post.category}</span>
-                      <h4 className="text-2xl font-bold text-stone-800 leading-tight group-hover:text-red-600 transition-colors">{post.title}</h4>
-                      <p className="mt-4 text-sm text-stone-400 font-medium">{post.readTime || post.prepTime + ' MIN'}</p>
+                      <span className={`text-xs font-black uppercase tracking-widest mb-3 block ${post.x_type === 'article' ? 'text-emerald-600' : 'text-red-600'}`}>{post.category}</span>
+                      <h4 className="text-3xl font-bold text-stone-800 leading-tight group-hover:text-red-600 transition-colors tracking-tight">{post.title}</h4>
+                      <p className="mt-6 text-xs text-stone-400 font-black uppercase tracking-widest">{post.readTime || (post.prepTime ? post.prepTime + ' MINUTOS' : 'Leitura rápida')}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              
-              {!searchQuery && (
-                <div className="mt-16 text-center">
-                  <button 
-                    onClick={() => setCurrentView('receitas')}
-                    className="text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-800 transition-colors border-b border-stone-200 pb-2"
-                  >
-                    Ver todo o histórico <i className="fa-solid fa-arrow-right ml-2"></i>
-                  </button>
-                </div>
-              )}
+              <AdBanner />
             </section>
-
-            {/* 3. Featured Carousel Section */}
-            {!searchQuery && (
-              <section className="bg-white py-32 border-y border-stone-100">
-                <div className="max-w-7xl mx-auto px-4 mb-16 text-center">
-                  <h3 className="text-3xl font-black text-stone-800 tracking-tighter uppercase">Destaques da Temporada</h3>
-                </div>
-                <PostCarousel items={MOCK_RECIPES.slice(0, 5)} onItemClick={handleRecipeClick} />
-              </section>
-            )}
           </div>
         );
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fafaf9]">
-      <Header currentView={currentView} setView={setCurrentView} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header currentView={currentView} setView={setCurrentView} />
       <main className="flex-grow">{renderContent()}</main>
-      <Footer onEditorClick={() => setCurrentView('editor')} />
+      <Footer onEditorClick={() => setCurrentView('editor')} onTermsClick={() => setCurrentView('termos')} onViewChange={setCurrentView} />
     </div>
   );
 };

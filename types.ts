@@ -35,12 +35,14 @@ export interface Recipe {
   title: string;
   description: string;
   image: string;
+  image2?: string;
   difficulty: Difficulty;
   prepTime: number;
   cookTime: number;
   servings: number;
   diet: DietType;
   category: string;
+  subcategory: string;
   ingredients: string[];
   instructions: string[];
   nutrition: Nutrition;
@@ -55,8 +57,9 @@ export interface Article {
   excerpt: string;
   content: string;
   image: string;
-  // Added 'Saúde Geral' to the category union type to fix the error in constants.ts where this value is used.
-  category: 'Doenças' | 'Nutrição' | 'Bem-estar' | 'Mental' | 'Saúde Geral';
+  image2?: string;
+  category: string;
+  subcategory?: string; // Agora opcional
   date: string;
   readTime: string;
   author: string;
@@ -66,7 +69,7 @@ export type MealSlotType = 'Café da Manhã' | 'Lanche da Manhã' | 'Almoço' | 
 
 export interface MealPlanDay {
   day: string;
-  meals: Record<MealSlotType, string | null>; // Mapeia o tipo de refeição para o ID da receita
+  meals: Record<MealSlotType, string | null>; 
 }
 
 export type MealPlan = MealPlanDay[];

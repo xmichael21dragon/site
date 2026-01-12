@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -6,6 +7,15 @@
     <title>Saúde com Sabor - Nutrição e Bem-estar</title>
     <meta name="description" content="Sua plataforma completa de receitas saudáveis e planejamento alimentar." />
     
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1966477514201373" crossorigin="anonymous"></script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='25' fill='url(%23g)'/><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%232e7d32;stop-opacity:1' /><stop offset='100%25' style='stop-color:%23df2a2a;stop-opacity:1' /></linearGradient></defs><path d='M50 20c-18 0-30 15-30 35 0 25 30 35 30 35s30-10 30-35c0-20-12-35-30-35zm-5 45c-8 0-14-7-14-15s6-15 14-15v30z' fill='white'/></svg>">
+    
+    <!-- Theme Color para Android/Chrome -->
+    <meta name="theme-color" content="#2e7d32">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,9 +32,24 @@
       .minimal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
       .minimal-card:hover { transform: translateY(-4px); }
 
+      /* Esconder barra de rolagem em elementos específicos */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
       @media print {
         .no-print { display: none !important; }
         body { background: white !important; }
+      }
+
+      /* Estilo para containers de anúncios */
+      .ad-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #a8a29e;
+        text-align: center;
+        margin-bottom: 8px;
+        font-weight: 800;
       }
     </style>
     <script type="importmap">

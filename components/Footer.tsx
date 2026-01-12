@@ -3,15 +3,17 @@ import React from 'react';
 
 interface FooterProps {
   onEditorClick?: () => void;
+  onTermsClick?: () => void;
+  onViewChange?: (view: any) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onEditorClick }) => {
+const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChange }) => {
   return (
     <footer className="bg-white border-t border-stone-100 pt-16 pb-8 print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
-          <div className="col-span-1 md:col-span-1">
+          <div className="col-span-1">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-[#2e7d32] to-[#df2a2a] rounded-xl flex items-center justify-center text-white shadow-md">
                 <i className="fa-solid fa-leaf text-xl"></i>
@@ -55,36 +57,20 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick }) => {
           </div>
 
           <div>
-            <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Categorias</h4>
+            <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Conteúdo</h4>
             <ul className="space-y-3 text-sm text-stone-500 font-medium">
-              <li><a href="#" className="hover:text-[#df2a2a] transition-colors">Nutrição Geral</a></li>
-              <li><a href="#" className="hover:text-[#df2a2a] transition-colors">Receitas Emagrecimento</a></li>
-              <li><a href="#" className="hover:text-[#2e7d32] transition-colors">Bem-estar Mental</a></li>
-              <li><a href="#" className="hover:text-[#2e7d32] transition-colors">Dicas de Saúde</a></li>
+              <li><button onClick={() => onViewChange?.('receitas')} className="hover:text-[#df2a2a] transition-colors">Receitas Saudáveis</button></li>
+              <li><button onClick={() => onViewChange?.('saude')} className="hover:text-[#2e7d32] transition-colors">Artigos de Saúde</button></li>
+              <li><button onClick={() => onViewChange?.('sobre')} className="hover:text-stone-800 transition-colors">Sobre Nós</button></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Ferramentas</h4>
             <ul className="space-y-3 text-sm text-stone-500 font-medium">
-              <li><a href="#" className="hover:text-[#2e7d32] transition-colors">Calculadora IMC</a></li>
-              <li><a href="#" className="hover:text-[#df2a2a] transition-colors">Planejador Semanal</a></li>
-              <li><a href="#" className="hover:text-[#2e7d32] transition-colors">Guia Nutricional</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-stone-800 mb-6 uppercase tracking-wider text-xs">Administração</h4>
-            <ul className="space-y-3 text-sm text-stone-500 font-medium">
-              <li>
-                <button 
-                  onClick={onEditorClick}
-                  className="flex items-center gap-2 text-stone-400 hover:text-red-600 transition-colors"
-                >
-                  <i className="fa-solid fa-pen-to-square"></i> Área do Autor
-                </button>
-              </li>
-              <li><a href="#" className="hover:text-stone-800">Suporte Técnico</a></li>
+              <li><button onClick={() => onViewChange?.('conversor')} className="hover:text-blue-600 transition-colors">Conversor de Medidas</button></li>
+              <li><button onClick={() => onViewChange?.('imc')} className="hover:text-green-700 transition-colors">Calculadora IMC</button></li>
+              <li><button onClick={() => onViewChange?.('planner')} className="hover:text-orange-600 transition-colors">Plano Semanal</button></li>
             </ul>
           </div>
         </div>
@@ -99,9 +85,16 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick }) => {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-400 font-semibold">
             <p>© 2024 SAÚDE COM SABOR. Todos os direitos reservados.</p>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-stone-600">Termos de Uso</a>
-              <a href="#" className="hover:text-stone-600">Privacidade</a>
+            <div className="flex items-center gap-6">
+              <button onClick={onTermsClick} className="hover:text-stone-600 transition-colors">Termos de Uso</button>
+              <button onClick={() => onViewChange?.('privacidade')} className="hover:text-stone-600 transition-colors">Privacidade</button>
+              <button 
+                onClick={onEditorClick}
+                title="Área do Autor"
+                className="text-stone-300 hover:text-stone-500 transition-colors ml-2"
+              >
+                <i className="fa-solid fa-gear text-sm"></i>
+              </button>
             </div>
           </div>
         </div>

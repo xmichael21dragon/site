@@ -1,115 +1,82 @@
+
 import React from 'react';
 
 interface HeaderProps {
   currentView: string;
   setView: (view: any) => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentView, setView, searchQuery, setSearchQuery }) => {
+const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
+  const menuItems = [
+    { id: 'home', label: 'Início' },
+    { id: 'conversor', label: 'Conversor' },
+    { id: 'imc', label: 'IMC' },
+    { id: 'planner', label: 'Plano Semanal' },
+    { id: 'receitas', label: 'Receitas' },
+    { id: 'saude', label: 'Saúde' },
+  ];
+
+  const handleNavigate = (view: string) => {
+    setView(view);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-stone-100 shadow-sm print:hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-4">
+      {/* CABEÇALHO PRINCIPAL - Otimizado para largura máxima */}
+      <div className="max-w-[1440px] mx-auto px-3 md:px-6 lg:px-10">
+        <div className="flex items-center h-16 md:h-20 lg:h-24 justify-between gap-2">
           
-          {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer group flex-shrink-0" onClick={() => { setView('home'); setSearchQuery(''); }}>
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2e7d32] to-[#df2a2a] rounded-xl flex items-center justify-center text-white shadow-md transform -rotate-3 group-hover:rotate-0 transition-transform">
-              <i className="fa-solid fa-leaf text-xl"></i>
+          {/* LOGO - Tamanho adaptável para economizar espaço */}
+          <div 
+            className="flex items-center gap-2 md:gap-3 cursor-pointer group flex-shrink-0" 
+            onClick={() => handleNavigate('home')}
+          >
+            <div className="w-9 h-9 md:w-11 lg:w-14 bg-gradient-to-br from-[#2e7d32] to-[#df2a2a] rounded-[12px] md:rounded-[15px] lg:rounded-[20px] flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
+              <i className="fa-solid fa-leaf text-base md:text-xl lg:text-2xl"></i>
             </div>
-            <div className="hidden lg:flex flex-col">
-              <h1 className="text-sm font-black tracking-tighter leading-none text-stone-800">SAÚDE <span className="text-red-600">COM</span></h1>
-              <span className="text-md font-black tracking-[0.2em] leading-none text-green-700 uppercase">SABOR</span>
+            
+            <div className="hidden lg:flex flex-col justify-center select-none">
+              <div className="flex items-center gap-1 leading-none">
+                <span className="text-[11px] font-[900] text-black tracking-tighter uppercase font-sans">
+                  SAÚDE
+                </span>
+                <span className="text-[11px] font-[900] text-[#df2a2a] tracking-tighter uppercase font-sans">
+                  COM
+                </span>
+              </div>
+              <span className="text-[22px] font-[900] tracking-[0.15em] leading-none text-[#2e7d32] font-sans -mt-0.5">
+                SABOR
+              </span>
             </div>
           </div>
 
-          {/* Barra de Busca Minimalista (Desktop/Tablet) */}
-          <div className="flex-grow max-w-md relative group hidden md:block">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-300 group-focus-within:text-red-500 transition-colors pointer-events-none">
-              <i className="fa-solid fa-magnifying-glass text-sm"></i>
-            </div>
-            <input 
-              type="text"
-              placeholder="Pesquisar receitas, artigos..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                // Forçar volta para home ou categorias de conteúdo para ver os resultados
-                if (currentView !== 'home' && currentView !== 'receitas' && currentView !== 'saude') {
-                  setView('home');
-                }
-              }}
-              className="w-full bg-stone-50 border-none rounded-2xl py-2.5 pl-11 pr-10 text-sm font-medium text-stone-700 placeholder:text-stone-300 focus:ring-2 focus:ring-red-100 focus:bg-white transition-all outline-none"
-            />
-            {searchQuery && (
+          {/* MENU DE NAVEGAÇÃO - Fonte e Gaps Ajustados para caber tudo */}
+          <nav className="flex items-center overflow-x-auto no-scrollbar py-1 gap-1 md:gap-1.5 lg:gap-2 flex-grow justify-center px-2">
+            {menuItems.map((item) => (
               <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-300 hover:text-red-500 transition-colors"
-                title="Limpar busca"
+                key={item.id}
+                onClick={() => handleNavigate(item.id)}
+                className={`px-3 md:px-4 lg:px-5 py-2 lg:py-2.5 rounded-xl md:rounded-2xl text-[13px] md:text-[15px] lg:text-[16px] transition-all duration-200 whitespace-nowrap tracking-tight
+                  ${currentView === item.id 
+                    ? 'text-black bg-[#f4f4f3] font-[800]' 
+                    : 'text-[#8c8c8a] font-[700] hover:text-black hover:bg-stone-50'}`}
               >
-                <i className="fa-solid fa-circle-xmark"></i>
+                {item.label}
               </button>
-            )}
-          </div>
-
-          {/* Navegação */}
-          <nav className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto no-scrollbar">
-            <button 
-              onClick={() => { setView('home'); setSearchQuery(''); }}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'home' && !searchQuery ? 'bg-stone-100 text-stone-900' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              Início
-            </button>
-            <button 
-              onClick={() => setView('conversor')}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'conversor' ? 'bg-blue-50 text-blue-600' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              Conversor
-            </button>
-            <button 
-              onClick={() => setView('imc')}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'imc' ? 'bg-green-50 text-green-700' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              IMC
-            </button>
-            <button 
-              onClick={() => setView('planner')}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'planner' ? 'bg-orange-50 text-orange-600' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              Plano Semanal
-            </button>
-            <button 
-              onClick={() => setView('receitas')}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'receitas' || currentView === 'recipe' ? 'bg-red-50 text-red-600' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              Receitas
-            </button>
-            <button 
-              onClick={() => setView('saude')}
-              className={`px-3 py-2 rounded-lg text-xs md:text-sm font-bold transition-all whitespace-nowrap ${currentView === 'saude' || currentView === 'article' ? 'bg-emerald-50 text-emerald-600' : 'text-stone-500 hover:bg-stone-50'}`}
-            >
-              Saúde
-            </button>
+            ))}
           </nav>
-        </div>
 
-        {/* Barra de Busca Mobile (Aparece apenas em telas pequenas) */}
-        <div className="pb-4 md:hidden">
-          <div className="relative group">
-            <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-300"></i>
-            <input 
-              type="text"
-              placeholder="Buscar receitas..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (currentView !== 'home' && currentView !== 'receitas' && currentView !== 'saude') {
-                  setView('home');
-                }
-              }}
-              className="w-full bg-stone-50 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm font-medium focus:ring-2 focus:ring-red-100 outline-none transition-all"
-            />
+          {/* BOTÃO SOBRE NÓS - Estilo Cápsula do Print */}
+          <div className="flex-shrink-0 ml-1 md:ml-2">
+            <button 
+              onClick={() => handleNavigate('sobre')}
+              className={`px-4 md:px-7 lg:px-9 py-2 md:py-3 lg:py-3.5 rounded-full text-[13px] md:text-[15px] lg:text-[16px] font-[900] tracking-tight transition-all duration-300 whitespace-nowrap
+                ${currentView === 'sobre' 
+                  ? 'bg-stone-700 text-white' 
+                  : 'bg-[#1c1c1c] text-white hover:bg-black hover:shadow-lg shadow-sm'}`}
+            >
+              Sobre Nós
+            </button>
           </div>
         </div>
       </div>
