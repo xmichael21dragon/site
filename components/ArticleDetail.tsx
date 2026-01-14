@@ -2,6 +2,7 @@
 import React from 'react';
 import { Article } from '../types';
 import AdBanner from './AdBanner';
+import CommentSection from './CommentSection';
 
 interface ArticleDetailProps {
   article: Article;
@@ -62,6 +63,8 @@ const ArticleDetail: React.FC<ArticleDetailProps> = ({ article, onBack }) => {
               return <p key={idx} className="text-stone-600 text-2xl leading-relaxed mb-12 font-medium">{paragraph}</p>;
             })}
           </div>
+
+          <CommentSection contentId={article.id} type="article" />
 
           <AdBanner className="my-20" />
 

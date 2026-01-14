@@ -30,6 +30,16 @@ export interface Review {
   photo?: string;
 }
 
+export interface Comment {
+  id: string;
+  content_id: string;
+  user_name: string;
+  comment: string;
+  rating?: number;
+  created_at: string;
+  type: 'recipe' | 'article';
+}
+
 export interface Recipe {
   id: string;
   title: string;
@@ -59,7 +69,7 @@ export interface Article {
   image: string;
   image2?: string;
   category: string;
-  subcategory?: string; // Agora opcional
+  subcategory?: string;
   date: string;
   readTime: string;
   author: string;

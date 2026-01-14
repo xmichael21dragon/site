@@ -16,6 +16,7 @@ import ContentEditor from './components/ContentEditor';
 import TermsOfUse from './components/TermsOfUse';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import AdBanner from './components/AdBanner';
+import SearchInput from './components/SearchInput'; // Novo Import
 import { supabase } from './lib/supabase';
 
 type View = 'home' | 'recipe' | 'planner' | 'imc' | 'receitas' | 'sobre' | 'conversor' | 'saude' | 'article' | 'editor' | 'termos' | 'privacidade';
@@ -38,7 +39,6 @@ const App: React.FC = () => {
         supabase.from('articles').select('*').order('created_at', { ascending: false })
       ]);
 
-      // Se o banco estiver vazio, usa os mocks como fallback inicial
       const recipesData = (recipesRes.data && recipesRes.data.length > 0) ? recipesRes.data : MOCK_RECIPES;
       const articlesData = (articlesRes.data && articlesRes.data.length > 0) ? articlesRes.data : MOCK_ARTICLES;
 
@@ -55,7 +55,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, [currentView]); // Recarrega ao mudar de página para garantir dados frescos
+  }, [currentView]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -104,24 +104,11 @@ const App: React.FC = () => {
     setCurrentView('article');
   };
 
-  const SearchInput = ({ placeholder }: { placeholder: string }) => (
-    <div className="relative w-full max-w-2xl group">
-      <i className="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-stone-400 text-xl group-focus-within:text-red-500 transition-colors"></i>
-      <input 
-        type="text" 
-        placeholder={placeholder}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full bg-white border-2 border-stone-100 focus:border-red-500/20 rounded-[2rem] py-6 pl-16 pr-8 text-xl text-stone-800 font-bold shadow-sm outline-none transition-all placeholder:text-stone-300"
-      />
-    </div>
-  );
-
   const renderContent = () => {
     if (isLoading && currentView === 'home') {
       return (
         <div className="flex flex-col items-center justify-center py-40 animate-pulse">
-          <div className="w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="w-16 h-16 border-4 border-[#df2a2a] border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-stone-400 font-bold uppercase tracking-widest text-xs">Carregando Sabores...</p>
         </div>
       );
@@ -140,55 +127,99 @@ const App: React.FC = () => {
       case 'receitas':
         const subcategoryEntries: [string, Recipe[]][] = Object.entries(groupedRecipes);
         return (
-          <div className="max-w-7xl mx-auto px-4 py-16 animate-fade-in">
-            <div className="text-center mb-20">
-              <h1 className="text-5xl md:text-7xl font-black text-stone-800 tracking-tighter mb-6 leading-none">Receitas Saudáveis</h1>
-              <p className="text-stone-500 font-medium mb-12 text-2xl italic">Equilíbrio e sabor em cada prato.</p>
-              <div className="flex justify-center">
-                <SearchInput placeholder="Ex: Massa, Fitness, Detox..." />
-              </div>
-            </div>
-            <AdBanner className="mb-20" />
-            {subcategoryEntries.length > 0 ? subcategoryEntries.map(([subcategory, catRecipes], idx) => (
-              <React.Fragment key={subcategory}>
-                <div className="mb-20">
-                  <h2 className="text-sm font-black text-red-600 uppercase tracking-[0.4em] mb-10 border-b border-stone-100 pb-6">{subcategory}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-                    {catRecipes.map(r => <RecipeCard key={r.id} recipe={r} onClick={() => handleRecipeClick(r)} />)}
-                  </div>
+          <div className="animate-fade-in bg-[#fafaf9]">
+            <section className="relative h-[550px] md:h-[650px] flex items-center justify-center overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=2000" 
+                className="absolute inset-0 w-full h-full object-cover scale-110" 
+                alt="Fundo de Receitas Saudáveis" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-stone-900/70 via-stone-900/40 to-[#fafaf9]"></div>
+              <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-10">
+                <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/10 backdrop-blur-md rounded-full mb-6 border border-white/20">
+                   <div className="w-2 h-2 bg-[#df2a2a] rounded-full animate-ping"></div>
+                   <span className="text-[10px] font-black text-white uppercase tracking-[0.4em]">Gastronomia Funcional</span>
                 </div>
-                {idx === 0 && subcategoryEntries.length > 1 && <AdBanner className="mb-20" />}
-              </React.Fragment>
-            )) : (
-              <div className="text-center py-40 bg-white rounded-[4rem] border-2 border-dashed border-stone-100">
-                <i className="fa-solid fa-utensils text-7xl text-stone-100 mb-8"></i>
-                <p className="text-stone-400 text-2xl font-bold">Nenhuma receita encontrada.</p>
+                <h1 className="text-6xl md:text-9xl font-black text-white tracking-tighter mb-8 leading-[0.9] drop-shadow-2xl">
+                  Receitas <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-white">Saudáveis</span>
+                </h1>
+                <p className="text-white/80 font-medium mb-12 text-xl md:text-2xl italic max-w-2xl mx-auto leading-relaxed">
+                  Equilíbrio perfeito entre o prazer de comer bem e o compromisso com sua longevidade.
+                </p>
+                <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="O que deseja preparar?" transparent />
               </div>
-            )}
+            </section>
+            <div className="max-w-7xl mx-auto px-4 pb-32 -mt-10 relative z-20">
+              <AdBanner className="mb-20" />
+              {subcategoryEntries.length > 0 ? subcategoryEntries.map(([subcategory, catRecipes], idx) => (
+                <React.Fragment key={subcategory}>
+                  <div className="mb-24">
+                    <div className="flex items-center gap-6 mb-12">
+                       <h2 className="text-sm font-black text-stone-400 uppercase tracking-[0.4em] whitespace-nowrap">{subcategory}</h2>
+                       <div className="h-[1px] bg-stone-200 flex-grow"></div>
+                       <span className="text-[10px] font-black text-stone-300 uppercase">{catRecipes.length} PRATOS</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                      {catRecipes.map(r => <RecipeCard key={r.id} recipe={r} onClick={() => handleRecipeClick(r)} />)}
+                    </div>
+                  </div>
+                  {idx === 0 && subcategoryEntries.length > 1 && <AdBanner className="mb-24" />}
+                </React.Fragment>
+              )) : (
+                <div className="text-center py-40 bg-white rounded-[4rem] border-2 border-dashed border-stone-100 shadow-sm">
+                  <p className="text-stone-300 text-2xl font-black uppercase tracking-widest">Nenhuma receita encontrada.</p>
+                </div>
+              )}
+            </div>
           </div>
         );
       case 'saude':
         return (
-          <div className="max-w-7xl mx-auto px-4 py-16 animate-fade-in">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-10">
-              <div>
-                <h1 className="text-6xl font-black text-stone-800 tracking-tighter mb-4 leading-none">Saúde</h1>
-                <p className="text-stone-500 text-2xl font-medium">Artigos revisados para o seu bem-estar.</p>
-              </div>
-              <SearchInput placeholder="Pesquisar artigos..." />
-            </div>
-            <AdBanner className="mb-16" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-20">
-              {filteredArticles.map(a => (
-                <div key={a.id} onClick={() => handleArticleClick(a)} className="bg-white p-10 rounded-[3rem] border border-stone-100 flex gap-8 cursor-pointer hover:shadow-2xl transition-all group">
-                  <img src={a.image} className="w-48 h-48 rounded-[2rem] object-cover shadow-md" alt={a.title} />
-                  <div className="flex flex-col justify-center">
-                    <span className="text-xs font-black text-emerald-600 uppercase tracking-widest mb-3">{a.category}</span>
-                    <h3 className="text-2xl font-bold mb-4 group-hover:text-emerald-600 transition-colors leading-tight">{a.title}</h3>
-                    <p className="text-lg text-stone-500 line-clamp-2 leading-relaxed">{a.excerpt}</p>
-                  </div>
+          <div className="animate-fade-in bg-[#fafaf9]">
+            <section className="relative h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=2000" 
+                className="absolute inset-0 w-full h-full object-cover scale-105" 
+                alt="Bem-estar e Saúde" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-tr from-stone-900/80 via-stone-900/30 to-transparent"></div>
+              <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-10">
+                <div className="inline-flex items-center gap-3 px-8 py-3 bg-emerald-600/20 backdrop-blur-xl rounded-full mb-8 border border-emerald-500/30">
+                   <i className="fa-solid fa-notes-medical text-emerald-400"></i>
+                   <span className="text-[10px] font-black text-emerald-100 uppercase tracking-[0.5em]">Ciência & Bem-estar</span>
                 </div>
-              ))}
+                <h1 className="text-7xl md:text-[10rem] font-black text-white tracking-tighter mb-8 leading-[0.8] drop-shadow-2xl">
+                  Portal <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-stone-200">Saúde</span>
+                </h1>
+                <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="O que deseja saber sobre saúde?" transparent />
+              </div>
+            </section>
+            <div className="max-w-7xl mx-auto px-4 pb-32 -mt-12 relative z-20">
+              <AdBanner className="mb-20" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+                {filteredArticles.length > 0 ? filteredArticles.map(a => (
+                  <div key={a.id} onClick={() => handleArticleClick(a)} className="bg-white p-10 rounded-[3.5rem] border border-stone-100 flex flex-col md:flex-row gap-10 cursor-pointer hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full -mr-16 -mt-16"></div>
+                    <div className="w-full md:w-56 h-56 flex-shrink-0 overflow-hidden rounded-[2.5rem] shadow-lg">
+                      <img src={a.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={a.title} />
+                    </div>
+                    <div className="flex flex-col justify-center relative z-10">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">{a.category}</span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-stone-100"></span>
+                        <span className="text-[10px] font-black text-stone-300 uppercase tracking-widest">{a.readTime}</span>
+                      </div>
+                      <h3 className="text-3xl font-black mb-6 group-hover:text-emerald-700 transition-colors leading-[1.1] tracking-tight text-stone-800">{a.title}</h3>
+                      <p className="text-lg text-stone-400 line-clamp-2 leading-relaxed font-medium italic">"{a.excerpt}"</p>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="col-span-full text-center py-40 bg-white rounded-[4rem] border-2 border-dashed border-stone-100">
+                    <p className="text-stone-300 text-xl font-black uppercase tracking-widest">Nenhum artigo encontrado.</p>
+                  </div>
+                )}
+              </div>
+              <AdBanner />
             </div>
           </div>
         );
@@ -199,10 +230,10 @@ const App: React.FC = () => {
             <section className="max-w-7xl mx-auto px-4 pt-16">
                <div className="relative rounded-[4rem] overflow-hidden bg-stone-900 text-white min-h-[600px] md:min-h-[750px] flex items-center px-10 md:px-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]">
                   <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=1200" className="absolute inset-0 w-full h-full object-cover opacity-30 scale-105" alt="Gourmet Food" />
-                  <div className="relative z-10 w-full flex flex-col items-center text-center">
-                    <h2 className="text-5xl md:text-7xl lg:text-9xl font-black mb-10 leading-[0.9] tracking-tighter text-white drop-shadow-2xl">A sua saúde começa no prato.</h2>
-                    <p className="text-xl md:text-3xl text-stone-300 mb-16 font-medium italic max-w-3xl px-6 leading-relaxed">Inspiração culinária para uma vida longa e deliciosa.</p>
-                    <SearchInput placeholder="O que vamos cozinhar hoje?" />
+                  <div className="relative z-10 w-full flex flex-col items-center text-center px-4">
+                    <h2 className="text-5xl md:text-7xl lg:text-[10rem] font-black mb-10 leading-[0.8] tracking-tighter text-white drop-shadow-2xl">A sua saúde <br/> começa no prato.</h2>
+                    <p className="text-xl md:text-3xl text-stone-300 mb-16 font-medium italic max-w-3xl leading-relaxed">Inspiração culinária para uma vida longa e deliciosa.</p>
+                    <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="O que vamos cozinhar hoje?" transparent />
                   </div>
                </div>
             </section>
@@ -210,14 +241,10 @@ const App: React.FC = () => {
             <section className="pt-8">
               <div className="max-w-7xl mx-auto px-4 mb-10">
                 <h3 className="text-sm font-black text-stone-400 uppercase tracking-[0.5em] mb-4">Destaques da Semana</h3>
-                <div className="w-16 h-1.5 bg-red-600 rounded-full"></div>
+                <div className="w-16 h-1.5 bg-[#df2a2a] rounded-full"></div>
               </div>
-              <PostCarousel 
-                items={recentPosts} 
-                onItemClick={(item: any) => item.x_type === 'article' ? handleArticleClick(item) : handleRecipeClick(item)} 
-              />
+              <PostCarousel items={recentPosts} onItemClick={(item: any) => item.x_type === 'article' ? handleArticleClick(item) : handleRecipeClick(item)} />
             </section>
-            <AdBanner />
             <section className="max-w-7xl mx-auto px-4 pt-12">
               <div className="mb-16">
                 <h3 className="text-sm font-black text-stone-400 uppercase tracking-[0.5em] mb-4">Últimas Publicações</h3>
@@ -233,14 +260,13 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <span className={`text-xs font-black uppercase tracking-widest mb-3 block ${post.x_type === 'article' ? 'text-emerald-600' : 'text-red-600'}`}>{post.category}</span>
-                      <h4 className="text-3xl font-bold text-stone-800 leading-tight group-hover:text-red-600 transition-colors tracking-tight">{post.title}</h4>
+                      <span className={`text-xs font-black uppercase tracking-widest mb-3 block ${post.x_type === 'article' ? 'text-emerald-600' : 'text-[#df2a2a]'}`}>{post.category}</span>
+                      <h4 className="text-3xl font-bold text-stone-800 leading-tight group-hover:text-[#df2a2a] transition-colors tracking-tight">{post.title}</h4>
                       <p className="mt-6 text-xs text-stone-400 font-black uppercase tracking-widest">{post.readTime || (post.prepTime ? post.prepTime + ' MINUTOS' : 'Leitura rápida')}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <AdBanner />
             </section>
           </div>
         );

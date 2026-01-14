@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Recipe } from '../types';
 import AdBanner from './AdBanner';
+import CommentSection from './CommentSection';
 
 interface RecipeDetailProps {
   recipe: Recipe;
@@ -107,7 +108,10 @@ const RecipeDetail: React.FC<RecipeDetailProps> = ({ recipe, onBack }) => {
           </div>
         </section>
       </div>
-      <AdBanner className="mt-12" />
+
+      <CommentSection contentId={recipe.id} type="recipe" />
+
+      <AdBanner className="mt-24" />
     </article>
   );
 };

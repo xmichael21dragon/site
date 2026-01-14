@@ -15,8 +15,9 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [adminTab, setAdminTab] = useState<'create' | 'manage'>('create');
+  const [adminTab, setAdminTab] = useState<'create' | 'manage' | 'seo'>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [generatedSitemap, setGeneratedSitemap] = useState('');
 
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
@@ -24,9 +25,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
   const [allArticles, setAllArticles] = useState<Article[]>([]);
 
-  // Verificar sessão ativa ao carregar
   useEffect(() => {
-    // Tenta obter a sessão atual
     const checkSession = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -88,34 +87,20 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
     e.preventDefault();
     setLoading(true);
     setLoginError(null);
-
-    // Validação básica se a chave ainda é o placeholder
-    // @ts-ignore
-    if (supabase.supabaseKey === 'SUA_ANON_KEY_AQUI') {
-      setLoginError("Configuração Pendente: Você precisa colar sua 'anon key' no arquivo lib/supabase.ts antes de entrar.");
-      setLoading(false);
-      return;
-    }
-    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password,
       });
-
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          setLoginError("E-mail ou senha incorretos. Verifique os dados informados.");
-        } else {
-          setLoginError(`Erro de conexão: ${error.message}`);
-        }
+        setLoginError("E-mail ou senha incorretos.");
         setLoading(false);
       } else {
         setSession(data.session);
         setLoading(false);
       }
     } catch (err) {
-      setLoginError("Ocorreu um erro inesperado ao tentar fazer login.");
+      setLoginError("Erro inesperado ao fazer login.");
       setLoading(false);
     }
   };
@@ -125,49 +110,38 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
     setSession(null);
   };
 
-  const uploadFile = async (file: File) => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `uploads/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(filePath, file);
-
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage.from('images').getPublicUrl(filePath);
-    return data.publicUrl;
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: 'image' | 'image2') => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const generateSitemapXML = () => {
+    const baseUrl = 'https://saudecomsabor.com.br';
+    const date = new Date().toISOString().split('T')[0];
     
-    setIsUploading(true);
-    try {
-      const publicUrl = await uploadFile(file);
-      setFormData((prev: any) => ({ ...prev, [target]: publicUrl }));
-    } catch (err) {
-      alert("Erro ao subir imagem: " + (err as any).message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const deletePost = async (id: string, postType: 'recipe' | 'article') => {
-    if (!confirm("Tem certeza que deseja excluir permanentemente este post?")) return;
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
     
-    const table = postType === 'recipe' ? 'recipes' : 'articles';
-    const { error } = await supabase.from(table).delete().eq('id', id);
+    // Páginas Estáticas
+    const staticPages = ['', '/?view=receitas', '/?view=saude', '/?view=imc', '/?view=conversor', '/?view=sobre'];
+    staticPages.forEach(page => {
+      xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <lastmod>${date}</lastmod>\n    <priority>${page === '' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+    });
 
-    if (!error) {
-      setShowSuccess("Post removido com sucesso!");
-      loadAdminData();
-    } else {
-      alert("Erro de segurança ao excluir. Verifique as políticas RLS.");
-    }
+    // Receitas Dinâmicas
+    allRecipes.forEach(recipe => {
+      xml += `  <url>\n    <loc>${baseUrl}/?view=recipe&amp;id=${recipe.id}</loc>\n    <lastmod>${date}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+    });
+
+    // Artigos Dinâmicos
+    allArticles.forEach(article => {
+      xml += `  <url>\n    <loc>${baseUrl}/?view=article&amp;id=${article.id}</loc>\n    <lastmod>${date}</lastmod>\n    <priority>0.7</priority>\n  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+    setGeneratedSitemap(xml);
+    setShowSuccess("Sitemap XML gerado com sucesso!");
     setTimeout(() => setShowSuccess(null), 3000);
+  };
+
+  const copySitemapToClipboard = () => {
+    navigator.clipboard.writeText(generatedSitemap);
+    alert("Sitemap copiado para a área de transferência!");
   };
 
   const publishToSupabase = async () => {
@@ -175,10 +149,8 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
       alert("Título e Imagem são obrigatórios.");
       return;
     }
-
     setIsUploading(true);
     const table = type === 'recipe' ? 'recipes' : 'articles';
-    
     const payload = type === 'recipe' ? {
       title: formData.title,
       description: formData.description,
@@ -214,15 +186,13 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
       } else {
         ({ error } = await supabase.from(table).insert([payload]));
       }
-
       if (error) throw error;
-
       setShowSuccess(editingId ? "Atualizado com sucesso!" : "Publicado com sucesso!");
       setFormData(initialFormState);
       setEditingId(null);
       setAdminTab('manage');
     } catch (err) {
-      alert("Erro de permissão: Você não tem autorização para gravar no banco.");
+      alert("Erro ao salvar.");
     } finally {
       setIsUploading(false);
       setTimeout(() => setShowSuccess(null), 3000);
@@ -248,40 +218,12 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
                <h2 className="text-3xl font-black text-stone-800 tracking-tighter leading-none">Acesso Autor</h2>
                <p className="text-stone-400 text-sm font-medium mt-3 italic">Entre para gerenciar seu conteúdo.</p>
             </div>
-            
             <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <label className={labelStyles}>E-mail de Acesso</label>
-                <input 
-                  type="email" 
-                  placeholder="exemplo@gmail.com" 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
-                  className={inputStyles} 
-                  required 
-                />
-              </div>
-              <div>
-                <label className={labelStyles}>Senha</label>
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  className={inputStyles} 
-                  required 
-                />
-              </div>
-              
-              {loginError && (
-                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-100 animate-shake">
-                  <i className="fa-solid fa-circle-exclamation mr-2"></i>
-                  {loginError}
-                </div>
-              )}
-
-              <button type="submit" disabled={loading} className="w-full py-5 bg-stone-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-stone-800 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3">
-                {loading ? <i className="fa-solid fa-circle-notch animate-spin"></i> : 'Acessar Painel'}
+              <input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className={inputStyles} required />
+              <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} className={inputStyles} required />
+              {loginError && <div className="text-red-600 text-xs font-bold text-center">{loginError}</div>}
+              <button type="submit" disabled={loading} className="w-full py-5 bg-stone-900 text-white rounded-2xl font-black uppercase tracking-widest">
+                {loading ? 'Entrando...' : 'Acessar Painel'}
               </button>
             </form>
           </div>
@@ -295,120 +237,112 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ onBack }) => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex items-center gap-6">
           <button onClick={onBack} className="text-xs font-black uppercase tracking-widest text-stone-400 hover:text-red-600 transition-all flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Sair</button>
-          <div className="h-4 w-px bg-stone-200"></div>
-          <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Editor: <span className="text-stone-800">{session.user.email}</span></p>
         </div>
-        
         <div className="flex items-center gap-4">
           <div className="flex bg-stone-100 p-1 rounded-2xl border border-stone-200">
-            <button onClick={() => { setAdminTab('create'); setEditingId(null); setFormData(initialFormState); }} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${adminTab === 'create' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}`}>Novo Post</button>
+            <button onClick={() => setAdminTab('create')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${adminTab === 'create' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}`}>Novo Post</button>
             <button onClick={() => setAdminTab('manage')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${adminTab === 'manage' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}`}>Gerenciar</button>
+            <button onClick={() => setAdminTab('seo')} className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${adminTab === 'seo' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400'}`}>SEO & Sitemap</button>
           </div>
-          <button onClick={handleLogout} className="w-10 h-10 rounded-xl bg-stone-100 text-stone-400 hover:text-red-600 transition-all flex items-center justify-center border border-stone-200" title="Sair do Sistema">
-            <i className="fa-solid fa-power-off"></i>
-          </button>
         </div>
       </div>
 
-      {adminTab === 'create' ? (
-        <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl border-2 border-stone-100">
-           {showSuccess && (
-             <div className="bg-emerald-50 text-emerald-600 p-4 rounded-xl text-xs font-bold border border-emerald-100 mb-8 animate-bounce">
-               {showSuccess}
-             </div>
-           )}
-           
-           <div className="mb-12">
-              <h2 className="text-4xl font-black text-stone-800 tracking-tighter">{editingId ? 'Editar Conteúdo' : 'Nova Publicação'}</h2>
-              <div className="flex gap-4 mt-4">
-                <button onClick={() => setType('recipe')} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest ${type === 'recipe' ? 'bg-red-600 text-white' : 'bg-stone-100 text-stone-400'}`}>Receita</button>
-                <button onClick={() => setType('article')} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest ${type === 'article' ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-400'}`}>Artigo</button>
+      {adminTab === 'seo' && (
+        <div className="bg-white rounded-[3rem] p-12 shadow-2xl border-2 border-stone-100 animate-fade-in">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl">
+              <i className="fa-solid fa-globe"></i>
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-stone-800 tracking-tighter">Otimização de Indexação</h2>
+              <p className="text-stone-400 text-sm font-medium uppercase tracking-widest">Sitemap XML e Ferramentas Google</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <div className="bg-stone-50 p-8 rounded-3xl border border-stone-100">
+                <h3 className="text-xl font-black text-stone-800 mb-4">Gerador de Sitemap</h3>
+                <p className="text-stone-500 text-sm leading-relaxed mb-8">
+                  O sitemap XML ajuda o Google a descobrir todas as suas receitas e artigos. 
+                  Clique abaixo para gerar uma versão atualizada baseada em todos os posts do seu banco de dados.
+                </p>
+                <button 
+                  onClick={generateSitemapXML}
+                  className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all shadow-lg active:scale-95"
+                >
+                  <i className="fa-solid fa-arrows-rotate mr-2"></i> Gerar Sitemap Dinâmico
+                </button>
               </div>
+
+              <div className="bg-blue-50 p-8 rounded-3xl border border-blue-100">
+                <h3 className="text-xl font-black text-stone-800 mb-2">Dica de SEO</h3>
+                <p className="text-blue-700/70 text-sm font-medium">
+                  Após gerar o XML, copie o código e atualize o arquivo <code className="bg-white/50 px-1 rounded">sitemap.xml</code> na raiz do seu servidor ou envie diretamente via Google Search Console.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col h-full">
+              <label className={labelStyles}>Resultado do XML Gerado</label>
+              <div className="relative flex-grow">
+                <textarea 
+                  readOnly
+                  value={generatedSitemap}
+                  className="w-full h-[300px] p-6 rounded-3xl bg-stone-900 text-emerald-400 font-mono text-xs resize-none border-2 border-stone-800 shadow-inner"
+                  placeholder="O XML aparecerá aqui após a geração..."
+                />
+                {generatedSitemap && (
+                  <button 
+                    onClick={copySitemapToClipboard}
+                    className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                  >
+                    <i className="fa-solid fa-copy mr-1"></i> Copiar
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {adminTab === 'create' && (
+        <div className="bg-white rounded-[3rem] p-12 shadow-2xl border-2 border-stone-100">
+           <h2 className="text-4xl font-black text-stone-800 tracking-tighter mb-8">{editingId ? 'Editar Conteúdo' : 'Nova Publicação'}</h2>
+           <div className="flex gap-4 mb-8">
+              <button onClick={() => setType('recipe')} className={`px-4 py-2 rounded-lg text-xs font-bold ${type === 'recipe' ? 'bg-red-600 text-white' : 'bg-stone-100 text-stone-400'}`}>Receita</button>
+              <button onClick={() => setType('article')} className={`px-4 py-2 rounded-lg text-xs font-bold ${type === 'article' ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-400'}`}>Artigo</button>
            </div>
            
            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-6">
-                 <div>
-                    <label className={labelStyles}>Título da Publicação</label>
-                    <input type="text" className={inputStyles} value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
-                 </div>
-                 
-                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className={labelStyles}>Foto Principal</label>
-                      <div onClick={() => !isUploading && fileInputRef1.current?.click()} className="aspect-square rounded-3xl bg-stone-50 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all overflow-hidden relative group">
-                        {formData.image ? <img src={formData.image} className="w-full h-full object-cover" /> : <i className="fa-solid fa-camera text-3xl text-stone-300 group-hover:text-blue-400"></i>}
-                        <input type="file" ref={fileInputRef1} className="hidden" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} />
-                      </div>
-                    </div>
-                    <div>
-                      <label className={labelStyles}>Rótulo / Subcategoria</label>
-                      <input type="text" className={inputStyles} placeholder="Ex: Sobremesa" value={formData.subcategory} onChange={(e) => setFormData({...formData, subcategory: e.target.value})} />
-                    </div>
-                 </div>
-
-                 {type === 'recipe' && (
-                    <div className="grid grid-cols-2 gap-4">
-                       <div>
-                          <label className={labelStyles}>Dificuldade</label>
-                          <select className={inputStyles} value={formData.difficulty} onChange={(e) => setFormData({...formData, difficulty: e.target.value})}>
-                            {Object.values(Difficulty).map(d => <option key={d} value={d}>{d}</option>)}
-                          </select>
-                       </div>
-                       <div>
-                          <label className={labelStyles}>Dieta</label>
-                          <select className={inputStyles} value={formData.diet} onChange={(e) => setFormData({...formData, diet: e.target.value})}>
-                            {Object.values(DietType).map(d => <option key={d} value={d}>{d}</option>)}
-                          </select>
-                       </div>
-                    </div>
-                 )}
+                <input type="text" className={inputStyles} placeholder="Título" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                <input type="text" className={inputStyles} placeholder="URL da Imagem" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} />
+                <input type="text" className={inputStyles} placeholder="Subcategoria" value={formData.subcategory} onChange={(e) => setFormData({...formData, subcategory: e.target.value})} />
               </div>
-
               <div className="space-y-6">
-                 <div>
-                    <label className={labelStyles}>{type === 'recipe' ? 'Modo de Preparo (Uma linha por passo)' : 'Conteúdo do Artigo'}</label>
-                    <textarea className={`${inputStyles} h-[340px] resize-none font-medium text-base`} value={formData.instructions} onChange={(e) => setFormData({...formData, instructions: e.target.value})} />
-                 </div>
-                 {type === 'recipe' && (
-                   <div>
-                      <label className={labelStyles}>Ingredientes (Um por linha)</label>
-                      <textarea className={`${inputStyles} h-[200px] resize-none font-medium text-base`} value={formData.ingredients} onChange={(e) => setFormData({...formData, ingredients: e.target.value})} />
-                   </div>
-                 )}
+                <textarea className={`${inputStyles} h-40`} placeholder="Instruções / Conteúdo" value={formData.instructions} onChange={(e) => setFormData({...formData, instructions: e.target.value})} />
               </div>
            </div>
-
-           <div className="mt-12 text-center border-t border-stone-100 pt-10 flex items-center justify-center gap-4">
-              <button 
-                onClick={publishToSupabase}
-                disabled={isUploading}
-                className="bg-stone-900 text-white px-16 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl disabled:opacity-50 active:scale-95"
-              >
-                {isUploading ? <i className="fa-solid fa-spinner animate-spin"></i> : (editingId ? 'Salvar Alterações' : 'Publicar Agora')}
-              </button>
-           </div>
+           <button onClick={publishToSupabase} disabled={isUploading} className="mt-10 px-10 py-4 bg-stone-900 text-white rounded-2xl font-black uppercase tracking-widest">
+              {isUploading ? 'Salvando...' : 'Salvar Publicação'}
+           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      )}
+
+      {adminTab === 'manage' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...allRecipes, ...allArticles].map(r => (
-            <div key={r.id} className="bg-white p-6 rounded-[2.5rem] border-2 border-stone-100 flex gap-5 items-center group shadow-sm hover:shadow-md transition-all">
-              <img src={r.image} className="w-24 h-24 rounded-2xl object-cover shadow-sm" />
-              <div className="flex-grow min-w-0">
-                <h4 className="font-bold text-stone-800 truncate mb-1 text-lg leading-tight">{r.title}</h4>
-                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{r.category}</p>
-                <div className="flex gap-4 mt-4 pt-3 border-t border-stone-50">
-                  <button onClick={() => { setEditingId(r.id); setFormData(r); setAdminTab('create'); }} className="text-[11px] font-black uppercase text-blue-600 hover:text-blue-800 transition-colors">Editar</button>
-                  <button onClick={() => deletePost(r.id, (r as any).ingredients ? 'recipe' : 'article')} className="text-[11px] font-black uppercase text-red-500 hover:text-red-700 transition-colors">Excluir</button>
+            <div key={r.id} className="bg-white p-6 rounded-[2.5rem] border-2 border-stone-100 flex items-center gap-4">
+              <img src={r.image} className="w-16 h-16 rounded-xl object-cover" />
+              <div className="min-w-0">
+                <h4 className="font-bold truncate text-stone-800">{r.title}</h4>
+                <div className="flex gap-2 mt-2">
+                   <button onClick={() => { setEditingId(r.id); setFormData(r); setAdminTab('create'); }} className="text-[10px] font-black text-blue-600">EDITAR</button>
                 </div>
               </div>
             </div>
           ))}
-          {allRecipes.length === 0 && allArticles.length === 0 && (
-            <div className="col-span-full py-20 text-center bg-stone-50 rounded-3xl border-2 border-dashed border-stone-200">
-               <p className="text-stone-400 font-bold">Nenhum post encontrado no banco de dados.</p>
-            </div>
-          )}
         </div>
       )}
     </div>
