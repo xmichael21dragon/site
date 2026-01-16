@@ -12,9 +12,8 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChan
   // Links oficiais e sociais atualizados
   const socialLinks = {
     instagram: "https://www.instagram.com/saudecomsaborr1/",
-    facebook: "https://www.facebook.com/saudecomsabor",
-    pinterest: "https://br.pinterest.com/saudecomsabor",
-    github: "https://github.com/xmichael21dragon/SAUDECOMSABOR2"
+    facebook: "https://www.facebook.com/profile.php?id=61563045164264&ref=_xav_ig_profile_page_web#",
+    pinterest: "https://br.pinterest.com/saudecomsaborr/?invite_code=97ba382fbf5e4d9781cac1fee79810a5&sender=1146095942580305663"
   };
 
   return (
@@ -50,13 +49,13 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChan
                 <i className="fa-brands fa-instagram text-xl"></i>
               </a>
               <a 
-                href={socialLinks.github} 
+                href={socialLinks.facebook} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                title="Ver Código Fonte no GitHub"
-                className="w-12 h-12 rounded-2xl bg-stone-50 flex items-center justify-center text-stone-400 hover:bg-stone-900 hover:text-white transition-all shadow-sm hover:shadow-lg hover:-translate-y-1"
+                title="Siga-nos no Facebook"
+                className="w-12 h-12 rounded-2xl bg-stone-50 flex items-center justify-center text-stone-400 hover:bg-[#1877F2] hover:text-white transition-all shadow-sm hover:shadow-lg hover:-translate-y-1"
               >
-                <i className="fa-brands fa-github text-xl"></i>
+                <i className="fa-brands fa-facebook-f text-xl"></i>
               </a>
               <a 
                 href={socialLinks.pinterest} 
