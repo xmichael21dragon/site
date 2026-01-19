@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { MOCK_RECIPES, MOCK_ARTICLES } from './constants';
 import { Recipe, Article } from './types';
@@ -47,12 +48,14 @@ const App: React.FC = () => {
         supabase.from('articles').select('*').order('created_at', { ascending: false })
       ]);
 
+      // Se o Supabase não tiver dados, usa os Mocks expandidos
       const recipesData = (recipesRes.data && recipesRes.data.length > 0) ? recipesRes.data : MOCK_RECIPES;
       const articlesData = (articlesRes.data && articlesRes.data.length > 0) ? articlesRes.data : MOCK_ARTICLES;
 
       setAllRecipes(recipesData as Recipe[]);
       setAllArticles(articlesData as Article[]);
     } catch (error) {
+      console.warn("Usando Mocks por falha na conexão:", error);
       setAllRecipes(MOCK_RECIPES);
       setAllArticles(MOCK_ARTICLES);
     } finally {
@@ -76,8 +79,7 @@ const App: React.FC = () => {
   const filteredRecipes = useMemo(() => {
     return allRecipes.filter(r => 
       r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.subcategory.toLowerCase().includes(searchQuery.toLowerCase())
+      r.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, allRecipes]);
 
@@ -92,11 +94,8 @@ const App: React.FC = () => {
     const combined = [
       ...allRecipes.map(r => ({ ...r, x_type: 'recipe' })),
       ...allArticles.map(a => ({ ...a, x_type: 'article' }))
-    ].sort((a, b) => {
-      // Ordenação simples por ID decrescente ou data se disponível
-      return (b.id > a.id) ? 1 : -1;
-    });
-    return combined.slice(0, 9); // Agora pegamos 9 posts para a Home
+    ].sort((a, b) => (b.id > a.id ? 1 : -1));
+    return combined.slice(0, 9); // Garantimos 9 posts para o mural
   }, [allRecipes, allArticles]);
 
   const handleRecipeClick = (recipe: Recipe) => {
@@ -114,7 +113,7 @@ const App: React.FC = () => {
       return (
         <div className="flex flex-col items-center justify-center py-40 animate-pulse">
           <div className="w-16 h-16 border-4 border-[#ef4444] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-stone-400 font-black uppercase tracking-widest text-xs">Carregando Sabores...</p>
+          <p className="text-stone-400 font-black uppercase tracking-widest text-xs">Preparando Sabores...</p>
         </div>
       );
     }
@@ -134,7 +133,7 @@ const App: React.FC = () => {
         const paginatedRecipes = filteredRecipes.slice(0, visibleRecipesLimit);
         const hasMoreRecipes = visibleRecipesLimit < filteredRecipes.length;
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in bg-[#fafaf9]">
             <section className="relative h-[450px] md:h-[550px] flex items-center justify-center overflow-hidden bg-stone-900">
                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&q=80&w=2000" className="absolute inset-0 w-full h-full object-cover opacity-40" alt="Banner" />
                <div className="relative z-10 text-center px-4 max-w-4xl flex flex-col items-center">
@@ -160,7 +159,7 @@ const App: React.FC = () => {
         const paginatedArticles = filteredArticles.slice(0, visibleArticlesLimit);
         const hasMoreArticles = visibleArticlesLimit < filteredArticles.length;
         return (
-          <div className="animate-fade-in">
+          <div className="animate-fade-in bg-[#fafaf9]">
             <section className="bg-stone-900 pt-32 pb-20 text-center text-white px-4">
                <div className="w-16 h-16 bg-white rounded-2xl p-3 mb-6 mx-auto"><Logo /></div>
                <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 uppercase">Guias de <span className="text-[#3b82f6]">Saúde</span></h1>
@@ -190,7 +189,7 @@ const App: React.FC = () => {
       case 'home':
       default:
         return (
-          <div className="space-y-20 pb-32 animate-fade-in">
+          <div className="space-y-20 pb-32 animate-fade-in bg-white">
             <section className="max-w-7xl mx-auto px-4 pt-16">
                <div className="relative rounded-[3.5rem] overflow-hidden bg-stone-900 text-white min-h-[550px] flex items-center px-10 md:px-20 shadow-2xl">
                   <img src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=1200" className="absolute inset-0 w-full h-full object-cover opacity-30" alt="Gourmet" />
@@ -204,22 +203,21 @@ const App: React.FC = () => {
                   </div>
                </div>
             </section>
-            <AdBanner className="my-0" />
             
             {/* Posts em Carrossel (Destaques) */}
             <section>
               <div className="max-w-7xl mx-auto px-4 mb-10 flex items-center justify-between">
-                <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em]">Destaques Principais</h3>
+                <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em]">Curadoria Especial</h3>
                 <div className="h-[1px] bg-stone-100 flex-grow mx-8"></div>
               </div>
               <PostCarousel items={recentPosts.slice(0, 5)} onItemClick={(item: any) => item.x_type === 'article' ? handleArticleClick(item) : handleRecipeClick(item)} />
             </section>
 
-            {/* MURAL DE NOVIDADES - 9 POSTS */}
+            {/* MURAL DE NOVIDADES - 9 POSTS GARANTIDOS */}
             <section className="max-w-7xl mx-auto px-4">
               <div className="flex flex-col items-center mb-16">
-                <h3 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter mb-4 uppercase">Novidades da <span className="text-[#ef4444]">Semana</span></h3>
-                <p className="text-stone-400 font-bold italic text-xl">As últimas criações e descobertas do nosso portal.</p>
+                <h3 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter mb-4 uppercase text-center">Mural de <span className="text-[#ef4444]">Novidades</span></h3>
+                <p className="text-stone-400 font-bold italic text-xl text-center">Tudo o que há de novo para sua saúde e paladar.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -238,11 +236,7 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     <div className="p-8">
-                      <div className="flex items-center gap-2 mb-4">
-                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                         <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Postado recentemente</span>
-                      </div>
-                      <h4 className="text-2xl font-black text-stone-800 leading-tight group-hover:text-[#ef4444] transition-colors mb-4 line-clamp-2">
+                      <h4 className="text-2xl font-black text-stone-800 leading-tight group-hover:text-[#ef4444] transition-colors mb-4 line-clamp-2 uppercase tracking-tighter">
                         {post.title}
                       </h4>
                       <div className="flex items-center justify-between pt-6 border-t border-stone-50">
@@ -254,15 +248,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              <div className="mt-20 text-center">
-                 <button 
-                  onClick={() => setCurrentView('receitas')}
-                  className="px-12 py-5 bg-stone-900 text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-black transition-all shadow-xl hover:scale-105"
-                 >
-                   Ver todo o acervo
-                 </button>
               </div>
             </section>
 
