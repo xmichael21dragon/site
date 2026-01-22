@@ -11,7 +11,6 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onViewPrivacy }) => {
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
-      // Pequeno delay para não sobrecarregar a entrada do usuário
       const timer = setTimeout(() => setIsVisible(true), 2000);
       return () => clearTimeout(timer);
     }
@@ -26,31 +25,25 @@ const CookieBanner: React.FC<CookieBannerProps> = ({ onViewPrivacy }) => {
 
   return (
     <div className="fixed bottom-6 left-6 right-6 z-[9999] animate-fade-in">
-      <div className="max-w-4xl mx-auto bg-stone-900/95 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[2.5rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-5 text-center md:text-left">
-          <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-[#3b82f6] text-xl flex-shrink-0">
-            <i className="fa-solid fa-cookie-bite"></i>
+      <div className="max-w-5xl mx-auto bg-stone-900/98 backdrop-blur-2xl border border-white/10 p-8 md:p-10 rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.6)] flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="flex items-center gap-6 text-center md:text-left">
+          <div className="w-16 h-16 bg-white/10 rounded-[1.5rem] flex items-center justify-center text-[#3b82f6] text-3xl flex-shrink-0">
+            <i className="fa-solid fa-shield-check"></i>
           </div>
           <div>
-            <h4 className="text-white font-black text-sm uppercase tracking-widest mb-1">Privacidade & Cookies</h4>
-            <p className="text-stone-400 text-xs leading-relaxed max-w-xl font-medium">
-              Utilizamos cookies e tecnologias semelhantes para melhorar sua experiência, analisar o tráfego do site e personalizar anúncios através do Google AdSense. Ao continuar, você concorda com nossa <button onClick={onViewPrivacy} className="text-white underline hover:text-[#3b82f6] transition-colors">Política de Privacidade</button>.
+            <h4 className="text-white font-black text-lg uppercase tracking-widest mb-2">Sua Privacidade é Nossa Prioridade</h4>
+            <p className="text-stone-400 text-sm leading-relaxed max-w-2xl font-medium">
+              Utilizamos tecnologias como cookies para armazenar informações e processar dados de navegação para fins de publicidade personalizada. Para saber mais sobre como nosso parceiro Google processa seus dados, acesse: <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" className="text-white font-black underline hover:text-[#3b82f6]">Como o Google utiliza dados</a>. Ao continuar, você aceita nossa <button onClick={onViewPrivacy} className="text-white underline font-black">Política de Privacidade</button>.
             </p>
           </div>
         </div>
         
-        <div className="flex gap-3 w-full md:w-auto">
-          <button 
-            onClick={onViewPrivacy}
-            className="flex-1 md:flex-none px-6 py-3 rounded-xl border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all"
-          >
-            Configurar
-          </button>
+        <div className="flex gap-4 w-full md:w-auto">
           <button 
             onClick={acceptCookies}
-            className="flex-1 md:flex-none px-10 py-3 bg-white text-stone-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#3b82f6] hover:text-white transition-all shadow-lg active:scale-95"
+            className="flex-1 md:flex-none px-12 py-5 bg-white text-stone-900 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#3b82f6] hover:text-white transition-all shadow-xl active:scale-95"
           >
-            Aceitar Todos
+            Aceitar e Continuar
           </button>
         </div>
       </div>

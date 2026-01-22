@@ -30,186 +30,78 @@ const WeightConverter: React.FC = () => {
 
   const results = calculate();
 
-  const inputStyles = "w-full p-6 rounded-3xl bg-white border-2 border-stone-100 focus:border-[#2e7d32] focus:ring-4 focus:ring-[#2e7d32]/5 outline-none transition-all text-2xl font-black text-stone-800 placeholder:text-stone-200 shadow-sm";
-  const labelStyles = "text-[12px] font-black text-stone-400 uppercase tracking-[0.2em] ml-2 flex items-center gap-2 mb-3";
-
   return (
-    <div className="max-w-5xl mx-auto px-4 py-20 animate-fade-in">
-      {/* Cabeçalho de Luxo */}
+    <div className="max-w-7xl mx-auto px-4 py-24 animate-fade-in">
       <div className="text-center mb-20">
-        <div className="inline-flex items-center gap-3 px-6 py-2 bg-stone-100 rounded-full mb-6">
-          <i className="fa-solid fa-wand-magic-sparkles text-[#df2a2a] text-sm"></i>
-          <span className="text-[10px] font-black uppercase tracking-widest text-stone-500">Ferramenta Interativa</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 mb-4 block">Educação Gastronômica</span>
+        <h2 className="text-6xl md:text-8xl font-black text-stone-900 tracking-tighter mb-8 uppercase">Precisão na <span className="text-[#ef4444]">Cozinha</span></h2>
+        <p className="text-stone-500 max-w-2xl mx-auto font-medium text-xl italic">Aprenda a converter medidas caseiras com rigor técnico para resultados profissionais.</p>
+      </div>
+
+      <div className="bg-stone-900 p-10 md:p-20 rounded-[4rem] text-white mb-24 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-[100px] -mr-48 -mt-48"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+          <div>
+            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3 block">Quantidade</label>
+            <input type="number" value={value} onChange={(e) => setValue(e.target.value)} placeholder="Ex: 1" className="w-full bg-white/10 border border-white/20 p-6 rounded-2xl text-3xl font-black outline-none focus:bg-white focus:text-stone-900 transition-all" />
+          </div>
+          <div>
+            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3 block">Medida Original</label>
+            <select value={fromUnit} onChange={(e) => setFromUnit(e.target.value)} className="w-full bg-white/10 border border-white/20 p-6 rounded-2xl text-xl font-bold outline-none cursor-pointer">
+              <option value="xicara">Xícaras</option>
+              <option value="colher_sopa">Colheres de Sopa</option>
+              <option value="colher_cha">Colheres de Chá</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3 block">Ingrediente</label>
+            <select value={ingredient} onChange={(e) => setIngredient(e.target.value)} className="w-full bg-white/10 border border-white/20 p-6 rounded-2xl text-xl font-bold outline-none cursor-pointer">
+              <option value="agua">Água / Líquidos</option>
+              <option value="farinha">Farinha de Trigo</option>
+              <option value="acucar">Açúcar</option>
+              <option value="manteiga">Manteiga</option>
+              <option value="arroz">Arroz</option>
+            </select>
+          </div>
         </div>
-        <h2 className="text-6xl md:text-8xl font-black text-stone-900 mb-6 tracking-tighter leading-none">
-          Conversor de <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2e7d32] to-[#1b5e20]">Medidas</span>
-        </h2>
-        <p className="text-stone-400 max-w-2xl mx-auto font-medium text-xl md:text-2xl leading-relaxed italic">
-          Transforme medidas caseiras em gramas e mililitros com precisão culinária profissional.
+
+        {results && (
+          <div className="mt-16 pt-16 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
+            <div className="text-center">
+              <span className="text-stone-500 text-[10px] font-black uppercase tracking-widest">Grams (g)</span>
+              <p className="text-6xl font-black text-[#ef4444] mt-2">{results.grams}</p>
+            </div>
+            <div className="text-center">
+              <span className="text-stone-500 text-[10px] font-black uppercase tracking-widest">Kilograms (kg)</span>
+              <p className="text-6xl font-black text-white mt-2">{results.kg}</p>
+            </div>
+            <div className="text-center">
+              <span className="text-stone-500 text-[10px] font-black uppercase tracking-widest">Volume (ml)</span>
+              <p className="text-6xl font-black text-white mt-2">{results.ml}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <AdBanner />
+
+      {/* CONTEÚDO EDITORIAL PARA O ADSENSE */}
+      <section className="max-w-4xl mx-auto prose prose-stone prose-lg py-20">
+        <h2 className="text-4xl font-black text-stone-900 mb-10 tracking-tight uppercase">A Ciência da Precisão na Confeitaria e Gastronomia</h2>
+        <p className="text-stone-600 text-xl leading-relaxed mb-8">
+          Muitos iniciantes na cozinha negligenciam a importância da pesagem correta dos ingredientes. Na gastronomia funcional, onde substituições de farinhas (como farinha de amêndoas por psyllium) são comuns, um erro de 10 gramas pode comprometer a estrutura e a absorção de nutrientes de uma receita.
         </p>
-      </div>
-
-      <AdBanner className="mb-16" />
-
-      {/* Container de Manipulação */}
-      <div className="relative group">
-        {/* Efeito de fundo decorativo */}
-        <div className="absolute -inset-4 bg-gradient-to-br from-[#2e7d32]/5 to-[#df2a2a]/5 rounded-[5rem] blur-2xl opacity-50 group-hover:opacity-100 transition-opacity"></div>
-        
-        <div className="relative bg-white/80 backdrop-blur-xl rounded-[4rem] p-10 md:p-16 border border-white shadow-[0_50px_100px_-20px_rgba(0,0,0,0.12)]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20">
-            
-            {/* Quantidade */}
-            <div className="flex flex-col">
-              <label className={labelStyles}>
-                <i className="fa-solid fa-hashtag text-[#df2a2a]"></i> Quanto?
-              </label>
-              <input 
-                type="number" 
-                value={value} 
-                onChange={(e) => setValue(e.target.value)} 
-                placeholder="Ex: 2.5"
-                className={inputStyles} 
-              />
-            </div>
-
-            {/* Medida de Origem */}
-            <div className="flex flex-col">
-              <label className={labelStyles}>
-                <i className="fa-solid fa-utensils text-stone-400"></i> Medida Original
-              </label>
-              <div className="relative">
-                <select 
-                  value={fromUnit} 
-                  onChange={(e) => setFromUnit(e.target.value)} 
-                  className={`${inputStyles} appearance-none cursor-pointer pr-16`}
-                >
-                  <option value="xicara">Xícaras</option>
-                  <option value="colher_sopa">Colheres de Sopa</option>
-                  <option value="colher_cha">Colheres de Chá</option>
-                </select>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-stone-50 rounded-xl flex items-center justify-center pointer-events-none">
-                  <i className="fa-solid fa-chevron-down text-stone-300 text-xs"></i>
-                </div>
-              </div>
-            </div>
-
-            {/* Ingrediente */}
-            <div className="flex flex-col">
-              <label className={labelStyles}>
-                <i className="fa-solid fa-seedling text-[#2e7d32]"></i> Qual Ingrediente?
-              </label>
-              <div className="relative">
-                <select 
-                  value={ingredient} 
-                  onChange={(e) => setIngredient(e.target.value)} 
-                  className={`${inputStyles} appearance-none cursor-pointer pr-16`}
-                >
-                  <option value="agua">Água / Líquidos</option>
-                  <option value="leite">Leite Integral</option>
-                  <option value="farinha">Farinha de Trigo</option>
-                  <option value="acucar">Açúcar Refinado</option>
-                  <option value="manteiga">Manteiga / Margarina</option>
-                  <option value="arroz">Arroz Branco</option>
-                  <option value="aveia">Aveia em Flocos</option>
-                  <option value="cacau">Cacau em Pó</option>
-                  <option value="oleo">Óleo Vegetal</option>
-                </select>
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 bg-stone-50 rounded-xl flex items-center justify-center pointer-events-none">
-                  <i className="fa-solid fa-chevron-down text-stone-300 text-xs"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Resultados com Design de Aplicativo */}
-          {results ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 animate-fade-in">
-              {/* Card Gramas */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-stone-900 to-black p-10 rounded-[3rem] shadow-2xl group/card hover:-translate-y-2 transition-all">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-                <p className="text-[11px] font-black text-stone-500 uppercase tracking-[0.3em] mb-4">Massa (Grama)</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-white tracking-tighter">{results.grams}</span>
-                  <span className="text-2xl font-bold text-[#2e7d32]">g</span>
-                </div>
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    <i className="fa-solid fa-weight-hanging text-white text-xs"></i>
-                  </div>
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Peso Líquido</span>
-                </div>
-              </div>
-
-              {/* Card KG */}
-              <div className="relative overflow-hidden bg-stone-50 p-10 rounded-[3rem] border border-stone-100 shadow-sm group/card hover:border-[#2e7d32] transition-all">
-                <p className="text-[11px] font-black text-stone-400 uppercase tracking-[0.3em] mb-4">Quilos (Kg)</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-stone-900 tracking-tighter">{results.kg}</span>
-                  <span className="text-2xl font-bold text-stone-300">kg</span>
-                </div>
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-stone-200 flex items-center justify-center">
-                    <i className="fa-solid fa-scale-balanced text-stone-500 text-xs"></i>
-                  </div>
-                  <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Unidade Decimal</span>
-                </div>
-              </div>
-
-              {/* Card Volume */}
-              <div className="relative overflow-hidden bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 shadow-sm group/card hover:bg-emerald-100 transition-all">
-                <p className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.3em] mb-4">Volume (Ml)</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-black text-[#1b5e20] tracking-tighter">{results.ml}</span>
-                  <span className="text-2xl font-bold text-emerald-300">ml</span>
-                </div>
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
-                    <i className="fa-solid fa-droplet text-xs"></i>
-                  </div>
-                  <span className="text-[10px] font-bold text-emerald-800/50 uppercase tracking-widest">Capacidade</span>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-20 bg-stone-50/50 rounded-[3rem] border-2 border-dashed border-stone-100">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-stone-200 text-4xl mb-6 shadow-sm">
-                <i className="fa-solid fa-calculator animate-bounce"></i>
-              </div>
-              <p className="font-black uppercase tracking-[0.3em] text-xs text-stone-300">Insira um valor para converter</p>
-            </div>
-          )}
+        <h3 className="text-2xl font-black text-stone-800 mb-6">Por que xícaras nem sempre funcionam?</h3>
+        <p className="text-stone-600 leading-relaxed mb-8">
+          O volume de uma xícara de farinha pode variar dependendo de quão compactada ela está. Uma xícara de farinha "peneirada" pesa menos do que uma xícara "pressionada". Por isso, grandes chefs e nutricionistas utilizam balanças de precisão. Nosso conversor utiliza médias de densidade aceitas internacionalmente para ajudar você a transitar entre essas medidas.
+        </p>
+        <div className="bg-red-50 p-10 rounded-[3rem] border border-red-100 mb-12">
+          <h4 className="text-red-900 font-black mb-4 uppercase text-sm">Dica de Conservação Nutricional</h4>
+          <p className="text-red-800/80 mb-0">Ao medir líquidos como azeite extra virgem, lembre-se que 1 colher de sopa equivale a aproximadamente 13g. A precisão ajuda a manter o controle calórico do seu plano alimentar diário sem sacrificar o sabor.</p>
         </div>
-      </div>
+      </section>
 
-      {/* Dicas e Informações Adicionais */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div className="flex gap-6 p-8 bg-white rounded-[2.5rem] border border-stone-100 shadow-sm">
-          <div className="w-14 h-14 rounded-2xl bg-[#df2a2a]/10 flex items-center justify-center text-[#df2a2a] flex-shrink-0 text-xl">
-            <i className="fa-solid fa-circle-info"></i>
-          </div>
-          <div>
-            <h4 className="font-black text-stone-900 uppercase tracking-widest text-xs mb-2">Por que gramas?</h4>
-            <p className="text-stone-500 text-sm leading-relaxed">
-              Xícaras e colheres podem variar de tamanho. Usar peso em gramas garante que sua receita tenha sempre o mesmo resultado perfeito, especialmente em confeitaria.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex gap-6 p-8 bg-stone-900 rounded-[2.5rem] shadow-xl text-white">
-          <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-[#2e7d32] flex-shrink-0 text-xl">
-            <i className="fa-solid fa-kitchen-set"></i>
-          </div>
-          <div>
-            <h4 className="font-black text-white uppercase tracking-widest text-xs mb-2">Dica de Chef</h4>
-            <p className="text-stone-400 text-sm leading-relaxed">
-              Ao medir farinha em xícaras, não a compacte. "Colherada por colherada" na xícara e nivelar com uma faca é o método mais próximo do peso ideal.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <AdBanner className="mt-20" />
+      <AdBanner />
     </div>
   );
 };
