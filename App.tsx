@@ -48,14 +48,12 @@ const App: React.FC = () => {
         supabase.from('articles').select('*').order('created_at', { ascending: false })
       ]);
 
-      // Se o Supabase não tiver dados, usa os Mocks expandidos
       const recipesData = (recipesRes.data && recipesRes.data.length > 0) ? recipesRes.data : MOCK_RECIPES;
       const articlesData = (articlesRes.data && articlesRes.data.length > 0) ? articlesRes.data : MOCK_ARTICLES;
 
       setAllRecipes(recipesData as Recipe[]);
       setAllArticles(articlesData as Article[]);
     } catch (error) {
-      console.warn("Usando Mocks por falha na conexão:", error);
       setAllRecipes(MOCK_RECIPES);
       setAllArticles(MOCK_ARTICLES);
     } finally {
@@ -95,7 +93,7 @@ const App: React.FC = () => {
       ...allRecipes.map(r => ({ ...r, x_type: 'recipe' })),
       ...allArticles.map(a => ({ ...a, x_type: 'article' }))
     ].sort((a, b) => (b.id > a.id ? 1 : -1));
-    return combined.slice(0, 9); // Garantimos 9 posts para o mural
+    return combined.slice(0, 9); // Garantimos os 9 posts iniciais
   }, [allRecipes, allArticles]);
 
   const handleRecipeClick = (recipe: Recipe) => {
@@ -113,7 +111,7 @@ const App: React.FC = () => {
       return (
         <div className="flex flex-col items-center justify-center py-40 animate-pulse">
           <div className="w-16 h-16 border-4 border-[#ef4444] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-stone-400 font-black uppercase tracking-widest text-xs">Preparando Sabores...</p>
+          <p className="text-stone-400 font-black uppercase tracking-widest text-xs">Preparando Experiência Gourmet...</p>
         </div>
       );
     }
@@ -121,9 +119,35 @@ const App: React.FC = () => {
     switch (currentView) {
       case 'recipe': return selectedRecipe ? <RecipeDetail recipe={selectedRecipe} onBack={() => setCurrentView('receitas')} /> : null;
       case 'article': return selectedArticle ? <ArticleDetail article={selectedArticle} onBack={() => setCurrentView('saude')} /> : null;
-      case 'planner': return <MealPlanner recipes={allRecipes} onRecipeClick={handleRecipeClick} />;
-      case 'imc': return <BMICalculator />;
-      case 'conversor': return <WeightConverter />;
+      case 'planner': return (
+        <div className="animate-fade-in">
+           <MealPlanner recipes={allRecipes} onRecipeClick={handleRecipeClick} />
+           <section className="max-w-4xl mx-auto px-4 pb-20">
+             <h3 className="text-2xl font-black mb-6 uppercase tracking-tight text-stone-800 border-l-4 border-red-500 pl-4">Guia de Planejamento Alimentar</h3>
+             <p className="text-stone-600 leading-relaxed mb-6">Organizar suas refeições é o primeiro passo para o sucesso nutricional. Ao planejar, você evita decisões impulsivas baseadas na fome e garante que seu corpo receba todos os macronutrientes necessários para funcionar em alta performance.</p>
+             <p className="text-stone-600 leading-relaxed">Nossa ferramenta permite que você visualize sua semana inteira, integrando receitas testadas por especialistas. Lembre-se: variedade é fundamental para uma microbiota intestinal saudável.</p>
+           </section>
+        </div>
+      );
+      case 'imc': return (
+        <div className="animate-fade-in">
+          <BMICalculator />
+          <section className="max-w-4xl mx-auto px-4 pb-20">
+             <h3 className="text-2xl font-black mb-6 uppercase tracking-tight text-stone-800 border-l-4 border-blue-500 pl-4">Entendendo seu Resultado de IMC</h3>
+             <p className="text-stone-600 leading-relaxed mb-6">O Índice de Massa Corporal (IMC) é um cálculo internacional usado para avaliar se uma pessoa está em seu peso ideal. Embora seja uma ferramenta valiosa, ela não diferencia massa gorda de massa muscular. Por isso, este diagnóstico deve ser complementado por uma avaliação profissional de bioimpedância.</p>
+             <p className="text-stone-600 leading-relaxed">Manter-se dentro da faixa saudável ajuda a prevenir doenças crônicas como diabetes tipo 2 e hipertensão arterial.</p>
+          </section>
+        </div>
+      );
+      case 'conversor': return (
+        <div className="animate-fade-in">
+          <WeightConverter />
+          <section className="max-w-4xl mx-auto px-4 pb-20">
+             <h3 className="text-2xl font-black mb-6 uppercase tracking-tight text-stone-800 border-l-4 border-emerald-500 pl-4">Precisão na Gastronomia Saudável</h3>
+             <p className="text-stone-600 leading-relaxed mb-6">Na culinária funcional, a proporção dos ingredientes é fundamental. Uma variação na quantidade de farinha de amêndoas ou psyllium pode alterar drasticamente a textura e o índice glicêmico de uma receita. Use nosso conversor para garantir resultados profissionais em sua cozinha.</p>
+          </section>
+        </div>
+      );
       case 'sobre': return <SobreNos />;
       case 'contato': return <Contact onBack={() => setCurrentView('home')} />;
       case 'editor': return <ContentEditor onBack={() => setCurrentView('home')} />;
@@ -198,26 +222,18 @@ const App: React.FC = () => {
                     <h2 className="text-5xl md:text-8xl font-black mb-8 leading-none tracking-tighter uppercase">
                       SAÚDE <span className="text-[#3b82f6]">COM</span> <span className="text-[#ef4444]">SABOR</span>
                     </h2>
-                    <p className="text-xl md:text-2xl text-stone-300 mb-12 font-medium italic max-w-2xl">Sua fonte definitiva de gastronomia funcional e bem-estar.</p>
-                    <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Busque por receitas ou guias de saúde..." transparent />
+                    <p className="text-xl md:text-2xl text-stone-300 mb-12 font-medium italic max-w-2xl">Sua publicação de autoridade em gastronomia funcional.</p>
+                    <SearchInput value={searchQuery} onChange={setSearchQuery} placeholder="Pesquise por receitas ou temas de saúde..." transparent />
                   </div>
                </div>
             </section>
             
-            {/* Posts em Carrossel (Destaques) */}
-            <section>
-              <div className="max-w-7xl mx-auto px-4 mb-10 flex items-center justify-between">
-                <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em]">Curadoria Especial</h3>
-                <div className="h-[1px] bg-stone-100 flex-grow mx-8"></div>
-              </div>
-              <PostCarousel items={recentPosts.slice(0, 5)} onItemClick={(item: any) => item.x_type === 'article' ? handleArticleClick(item) : handleRecipeClick(item)} />
-            </section>
-
-            {/* MURAL DE NOVIDADES - 9 POSTS GARANTIDOS */}
+            {/* Mural de 9 Posts Iniciais para o AdSense */}
             <section className="max-w-7xl mx-auto px-4">
               <div className="flex flex-col items-center mb-16">
-                <h3 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter mb-4 uppercase text-center">Mural de <span className="text-[#ef4444]">Novidades</span></h3>
-                <p className="text-stone-400 font-bold italic text-xl text-center">Tudo o que há de novo para sua saúde e paladar.</p>
+                <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.4em] mb-4">Atualizações Recentes</h3>
+                <h2 className="text-4xl md:text-6xl font-black text-stone-900 tracking-tighter uppercase text-center">Mural de <span className="text-[#ef4444]">Novidades</span></h2>
+                <div className="w-20 h-1.5 bg-stone-100 rounded-full mt-6"></div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -231,7 +247,7 @@ const App: React.FC = () => {
                       <img src={post.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={post.title} />
                       <div className="absolute top-6 left-6">
                         <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl backdrop-blur-md ${post.x_type === 'article' ? 'bg-blue-600/90 text-white' : 'bg-red-600/90 text-white'}`}>
-                          {post.x_type === 'article' ? 'Guia de Saúde' : (post.diet || 'Receita')}
+                          {post.x_type === 'article' ? 'Artigo de Saúde' : (post.diet || 'Receita Gourmet')}
                         </span>
                       </div>
                     </div>
@@ -239,8 +255,9 @@ const App: React.FC = () => {
                       <h4 className="text-2xl font-black text-stone-800 leading-tight group-hover:text-[#ef4444] transition-colors mb-4 line-clamp-2 uppercase tracking-tighter">
                         {post.title}
                       </h4>
+                      <p className="text-stone-500 text-sm line-clamp-2 mb-6 italic leading-relaxed">{post.description || post.excerpt}</p>
                       <div className="flex items-center justify-between pt-6 border-t border-stone-50">
-                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">{post.author}</span>
+                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Autor: {post.author}</span>
                         <div className="w-10 h-10 rounded-full bg-stone-50 flex items-center justify-center text-stone-300 group-hover:bg-red-50 group-hover:text-red-500 transition-all">
                           <i className="fa-solid fa-arrow-right"></i>
                         </div>
@@ -252,6 +269,15 @@ const App: React.FC = () => {
             </section>
 
             <AdBanner />
+            
+            {/* Seção Informativa no Rodapé da Home para SEO */}
+            <section className="bg-stone-50 py-24">
+               <div className="max-w-4xl mx-auto px-4 text-center">
+                  <h3 className="text-3xl font-black text-stone-800 mb-8 uppercase tracking-tighter">Nossa Proposta de Valor</h3>
+                  <p className="text-stone-500 text-lg leading-relaxed font-medium italic mb-6">"Acreditamos que a alimentação saudável não deve ser uma punição, mas uma celebração da vida e do sabor. Nosso portal é curado por especialistas para oferecer conteúdo de integridade, livre de modismos e focado em evidências científicas."</p>
+                  <p className="text-stone-400 text-sm">Todas as nossas receitas são testadas em cozinha experimental e revisadas nutricionalmente.</p>
+               </div>
+            </section>
           </div>
         );
     }
