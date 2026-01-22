@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Saúde com Sabor | Referência em Gastronomia Funcional e Nutrição</title>
     <meta name="description" content="Portal especializado em nutrição de alta performance, receitas gourmet saudáveis e guias de longevidade revisados por especialistas." />
-    <meta name="keywords" content="receitas saudáveis, nutrição funcional, bem-estar, imc, longevidade, gastronomia saudável" />
+    <meta name="keywords" content="receitas saudáveis, nutrição funcional, bem-estar, imc, longevidade, gastronomia saudável, saúde com sabor" />
     <meta name="author" content="Saúde com Sabor Editorial" />
     
     <!-- Google AdSense -->
@@ -42,6 +42,11 @@
       
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      ::selection {
+        background: #ef4444;
+        color: white;
+      }
     </style>
   <script type="importmap">
 {
@@ -56,7 +61,7 @@
 }
 </script>
 </head>
-  <body class="bg-[#fafaf9] text-stone-900">
+  <body class="bg-[#fafaf9] text-stone-900 selection:bg-red-50">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

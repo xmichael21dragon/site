@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Logo from './Logo';
 
@@ -26,10 +27,10 @@ const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
               <Logo />
             </div>
             <div className="hidden sm:flex flex-col">
-              <span className="text-lg font-[900] tracking-tighter uppercase leading-none text-stone-900">
-                SAÚDE <span className="text-[#3b82f6]">COM</span> <span className="text-[#ef4444]">SABOR</span>
+              <span className="text-xl font-[900] tracking-tighter uppercase leading-none text-stone-900">
+                SAÚDE<span className="text-[#ef4444]">COM</span>SABOR
               </span>
-              <span className="text-[9px] font-black tracking-[0.2em] text-stone-400 mt-1 uppercase">Bem-Estar e Gastronomia</span>
+              <span className="text-[9px] font-black tracking-[0.2em] text-stone-400 mt-1 uppercase">Gastronomia & Longevidade</span>
             </div>
           </div>
 

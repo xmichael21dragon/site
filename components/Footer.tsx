@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Logo from './Logo';
 
@@ -9,9 +10,9 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChange }) => {
   const socialLinks = {
-    instagram: "https://www.instagram.com/saudecomsaborr1/",
-    facebook: "https://www.facebook.com/profile.php?id=61563045164264",
-    pinterest: "https://br.pinterest.com/saudecomsaborr/"
+    instagram: "https://www.instagram.com/saudecomsabor/",
+    facebook: "https://www.facebook.com/saudecomsabor",
+    pinterest: "https://br.pinterest.com/saudecomsabor/"
   };
 
   return (
@@ -28,13 +29,13 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChan
               </div>
               <div className="flex flex-col">
                 <h2 className="text-xl font-black tracking-tighter leading-none text-stone-800 uppercase">
-                  SAÚDE <span className="text-[#3b82f6]">COM</span> <span className="text-[#ef4444]">SABOR</span>
+                  SAÚDE<span className="text-[#ef4444]">COM</span>SABOR
                 </h2>
-                <span className="text-[10px] font-black tracking-[0.2em] leading-none text-stone-400 mt-1 uppercase">Bem-Estar e Gastronomia</span>
+                <span className="text-[10px] font-black tracking-[0.2em] leading-none text-stone-400 mt-1 uppercase">Nutrição & Gastronomia</span>
               </div>
             </div>
             <p className="text-stone-500 text-sm leading-relaxed mb-8 max-w-sm">
-              Sua fonte definitiva de gastronomia funcional e bem-estar. Unimos o prazer de comer com a ciência da longevidade.
+              Sua fonte definitiva de gastronomia funcional e bem-estar. Unimos o prazer de comer com a ciência da longevidade e nutrição ortomolecular.
             </p>
             <div className="flex gap-4">
               <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-2xl bg-stone-50 flex items-center justify-center text-stone-400 hover:bg-gradient-to-tr hover:from-orange-500 hover:to-purple-600 hover:text-white transition-all shadow-sm">
@@ -81,11 +82,11 @@ const Footer: React.FC<FooterProps> = ({ onEditorClick, onTermsClick, onViewChan
               <i className="fa-solid fa-shield-heart"></i>
             </div>
             <p className="text-[11px] text-stone-600 leading-relaxed font-medium italic text-center md:text-left">
-              O Saúde com Sabor é um portal informativo. Não substituímos orientação médica profissional. Consulte sempre seu nutricionista antes de mudanças na dieta.
+              O Saúde com Sabor é um portal informativo de autoridade. Não substituímos orientação médica profissional. Consulte sempre seu nutricionista antes de mudanças na dieta.
             </p>
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] text-stone-400 font-black uppercase tracking-widest">
-            <p>© 2024 SAÚDE COM SABOR - BEM-ESTAR E GASTRONOMIA.</p>
+            <p>© 2024 SAÚDE COM SABOR - GASTRONOMIA & BEM-ESTAR.</p>
             <div className="flex items-center gap-8">
               <button onClick={onTermsClick} className="hover:text-stone-800 transition-colors">Termos</button>
               <button onClick={() => onViewChange?.('privacidade')} className="hover:text-stone-800 transition-colors">Privacidade</button>
