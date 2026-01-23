@@ -86,21 +86,23 @@ const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onRecipeClick }) => 
     <div className="max-w-7xl mx-auto px-4 py-24 animate-fade-in" id="meal-planner-view">
       
       <header className="text-center mb-16">
-        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 mb-4 block">Gestão de Saúde</span>
-        <h2 className="text-6xl md:text-8xl font-black text-stone-900 tracking-tighter mb-8 uppercase">Plano <span className="text-[#3b82f6]">Alimentar</span></h2>
-        <p className="text-stone-500 max-w-2xl mx-auto font-medium text-xl italic mb-10">Organize sua semana com as melhores receitas funcionais para atingir seus objetivos.</p>
-        <button 
-          onClick={() => setShowShoppingList(true)}
-          className="bg-stone-900 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-xs hover:bg-blue-600 transition-all shadow-2xl"
-        >
-          <i className="fa-solid fa-cart-shopping mr-3"></i> Ver Lista de Compras ({shoppingList.length})
-        </button>
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-stone-400 mb-4 block">Alta Performance Nutricional</span>
+        <h1 className="text-6xl md:text-8xl font-black text-stone-900 tracking-tighter mb-8 uppercase">Gestão de <span className="text-[#3b82f6]">Ciclo Alimentar</span></h1>
+        <p className="text-stone-500 max-w-2xl mx-auto font-medium text-xl italic mb-10 leading-relaxed">Organize sua jornada de longevidade. O planejamento é o antídoto contra escolhas impulsivas e o segredo para uma microbiota intestinal diversificada.</p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <button 
+            onClick={() => setShowShoppingList(true)}
+            className="bg-stone-900 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-xs hover:bg-blue-600 transition-all shadow-2xl active:scale-95"
+          >
+            <i className="fa-solid fa-cart-shopping mr-3"></i> Gerar Lista Automática ({shoppingList.length})
+          </button>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-7 gap-4 mb-24 overflow-x-auto pb-4 no-scrollbar">
         {mealPlan.map((day, dayIdx) => (
-          <div key={day.day} className="min-w-[200px] bg-white rounded-[2.5rem] border-2 border-stone-100 shadow-sm overflow-hidden flex flex-col">
-            <div className="p-4 bg-stone-900 text-center">
+          <div key={day.day} className="min-w-[220px] bg-white rounded-[2.5rem] border-2 border-stone-100 shadow-sm overflow-hidden flex flex-col hover:border-blue-100 transition-colors group">
+            <div className="p-4 bg-stone-900 text-center group-hover:bg-blue-600 transition-colors">
               <span className="text-[10px] font-black text-white uppercase tracking-widest">{day.day}</span>
             </div>
             <div className="p-4 space-y-6">
@@ -108,20 +110,22 @@ const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onRecipeClick }) => 
                 const recipeId = day.meals[slot];
                 const recipe = recipes.find(r => String(r.id) === String(recipeId));
                 return (
-                  <div key={slot}>
+                  <div key={slot} className="relative">
                     <p className="text-[8px] font-black text-stone-300 uppercase tracking-widest mb-2">{slot}</p>
                     {recipe ? (
-                      <div className="bg-stone-50 p-3 rounded-2xl border border-stone-100">
-                        <p className="text-[11px] font-bold text-stone-800 line-clamp-2">{recipe.title}</p>
+                      <div className="bg-stone-50 p-4 rounded-2xl border border-stone-100 relative group/item">
+                        <p className="text-[11px] font-bold text-stone-800 line-clamp-2 leading-tight">{recipe.title}</p>
                         <button onClick={() => {
                           const next = [...mealPlan];
                           next[dayIdx].meals[slot] = null;
                           setMealPlan(next);
-                        }} className="text-[8px] text-red-500 font-black mt-2 uppercase">Remover</button>
+                        }} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity shadow-lg">
+                          <i className="fa-solid fa-xmark"></i>
+                        </button>
                       </div>
                     ) : (
-                      <button onClick={() => setSearchModal({ dayIdx, slot })} className="w-full h-12 border-2 border-dashed border-stone-100 rounded-2xl flex items-center justify-center text-stone-200 hover:border-stone-400 hover:text-stone-400 transition-all">
-                        <i className="fa-solid fa-plus text-xs"></i>
+                      <button onClick={() => setSearchModal({ dayIdx, slot })} className="w-full h-14 border-2 border-dashed border-stone-100 rounded-2xl flex items-center justify-center text-stone-200 hover:border-blue-400 hover:text-blue-400 transition-all bg-white hover:bg-blue-50/30">
+                        <i className="fa-solid fa-plus-circle text-lg"></i>
                       </button>
                     )}
                   </div>
@@ -134,116 +138,35 @@ const MealPlanner: React.FC<MealPlannerProps> = ({ recipes, onRecipeClick }) => 
 
       <AdBanner />
 
-      {/* CONTEÚDO EDITORIAL PARA O ADSENSE */}
-      <section className="max-w-4xl mx-auto prose prose-stone prose-lg py-20">
-        <h2 className="text-4xl font-black text-stone-900 mb-10 tracking-tight uppercase">A Ciência da Organização Alimentar</h2>
-        <p className="text-stone-600 text-xl leading-relaxed mb-8">
-          O planejamento semanal de refeições não é apenas uma técnica de gestão de tempo, mas uma estratégia biológica comprovada para manter a homeostase do organismo. Quando decidimos o que comer com antecedência, reduzimos a "fadiga de decisão", um estado mental que frequentemente nos leva a escolher alimentos ultraprocessados ricos em sódio e gorduras saturadas.
-        </p>
-        <h3 className="text-2xl font-black text-stone-800 mb-6">Por que planejar sua semana?</h3>
-        <p className="text-stone-600 leading-relaxed mb-8">
-          Ao estruturar um cardápio equilibrado, garantimos a ingestão de diversos fitoquímicos e macronutrientes. Nosso planejador foi desenvolvido para integrar as receitas funcionais do portal, permitindo que você visualize o balanço entre proteínas, carboidratos de baixo índice glicêmico e gorduras saudáveis ao longo dos sete dias.
-        </p>
-        <div className="bg-emerald-50 p-10 rounded-[3rem] border border-emerald-100 mb-12">
-          <h4 className="text-emerald-900 font-black mb-4 uppercase text-sm">Benefícios Psicológicos</h4>
-          <p className="text-emerald-800/80 mb-0">Estudos de psicologia comportamental indicam que pessoas que planejam suas refeições apresentam níveis mais baixos de cortisol (o hormônio do estresse) relacionado à alimentação e maior sucesso em programas de emagrecimento sustentável.</p>
+      <section className="max-w-5xl mx-auto py-24 border-t border-stone-100">
+        <h2 className="text-4xl md:text-5xl font-black text-stone-900 mb-12 tracking-tight uppercase">A Bio-Psicologia do Planejamento</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-stone-600 leading-relaxed text-lg font-medium">
+          <div className="space-y-8">
+            <p>
+              Estudos da <strong>Psicologia Comportamental</strong> indicam que a "Fadiga de Decisão" é a maior causa de falha em dietas saudáveis. Ao final de um dia exaustivo, o cérebro busca recompensas rápidas de glicose e dopamina, levando à ingestão de alimentos ultraprocessados.
+            </p>
+            <h3 className="text-2xl font-black text-stone-800 uppercase tracking-tighter border-b-4 border-blue-100 pb-2 inline-block">Homeostase Nutricional</h3>
+            <p>
+              O planejamento semanal permite uma visão macro da sua ingestão de fitoquímicos. Nosso sistema foi projetado para que você possa alternar cores e nutrientes, garantindo que o seu corpo receba todo o espectro vitamínico necessário para manter a homeostase e prevenir inflamações crônicas.
+            </p>
+          </div>
+          <div className="space-y-8">
+            <h3 className="text-2xl font-black text-stone-800 uppercase tracking-tighter border-b-4 border-blue-100 pb-2 inline-block">Estratégia de Compras Inteligente</h3>
+            <p>
+              Ao utilizar nossa lista de compras automática, você reduz o desperdício de alimentos em até 40%. Além de ser uma prática sustentável, focar apenas nos ingredientes necessários impede que você navegue por corredores de supermercado repletos de produtos industrializados tentadores.
+            </p>
+            <div className="bg-blue-50 p-10 rounded-[3rem] border border-blue-100">
+               <h4 className="text-blue-900 font-black mb-4 uppercase text-xs tracking-widest">Dica de Organização</h4>
+               <p className="text-blue-800/70 text-base leading-relaxed italic">
+                 "Reserve 20 minutos do seu domingo para preencher este plano. Cozinhar em lotes (Meal Prep) nas noites de domingo economiza até 5 horas semanais de trabalho na cozinha durante a semana útil."
+               </p>
+            </div>
+          </div>
         </div>
-        <p className="text-stone-600 leading-relaxed">
-          Recomendamos que você dedique 15 minutos do seu domingo para preencher este plano. Utilize nossa lista de compras automática para otimizar sua ida ao mercado, focando em alimentos frescos e da estação.
-        </p>
       </section>
 
       <AdBanner />
-
-      {/* MODAL BUSCA RECEITA */}
-      {searchModal && (
-        <div className="fixed inset-0 z-[6000] flex items-center justify-center p-4 bg-stone-900/98 backdrop-blur-3xl">
-          <div className="bg-white rounded-[4rem] w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl animate-fade-in">
-            <div className="p-10 bg-stone-900 text-white flex items-center justify-between">
-              <h3 className="text-3xl font-black uppercase tracking-tighter">Escolher Receita</h3>
-              <button onClick={() => setSearchModal(null)} className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
-                <i className="fa-solid fa-times text-2xl"></i>
-              </button>
-            </div>
-            <div className="p-8 bg-stone-50 border-b border-stone-100">
-              <input 
-                type="text" 
-                placeholder="Pesquisar prato..." 
-                className="w-full p-6 rounded-[2rem] bg-white border-2 border-transparent focus:border-stone-900 outline-none transition-all font-bold shadow-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex-grow overflow-y-auto p-8 space-y-4">
-              {filteredRecipes.map(recipe => (
-                <div key={recipe.id} onClick={() => selectRecipe(recipe.id)} className="flex items-center gap-6 p-6 rounded-[2.5rem] border border-stone-100 hover:border-stone-900 hover:bg-stone-50 cursor-pointer transition-all group">
-                  <img src={recipe.image} className="w-20 h-20 rounded-[1.5rem] object-cover" />
-                  <div>
-                    <h4 className="font-black text-stone-800 text-xl truncate group-hover:text-black">{recipe.title}</h4>
-                    <p className="text-[11px] font-black text-red-500 uppercase tracking-widest mt-2">{recipe.diet}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL LISTA DE COMPRAS */}
-      {showShoppingList && (
-        <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4 bg-stone-900/95 backdrop-blur-2xl">
-          <div className="bg-white rounded-[4rem] w-full max-w-xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-stone-100">
-            <div className="p-8 md:p-10 border-b border-stone-100 bg-stone-900 text-white">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Sua Lista</h3>
-                <button onClick={closeModal} className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all text-xl">
-                  <i className="fa-solid fa-times"></i>
-                </button>
-              </div>
-              
-              <div className="flex gap-3">
-                <button 
-                  onClick={copyToClipboard}
-                  className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg ${copyFeedback ? 'bg-emerald-500 text-white' : 'bg-white text-stone-900 hover:bg-[#3b82f6] hover:text-white'}`}
-                >
-                  <i className={`fa-solid ${copyFeedback ? 'fa-check' : 'fa-copy'}`}></i>
-                  {copyFeedback ? 'Copiado para o Celular!' : 'Copiar Lista Inteira'}
-                </button>
-                <button 
-                  onClick={() => window.print()}
-                  className="w-16 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white hover:bg-white/20 transition-all"
-                  title="Imprimir Lista"
-                >
-                  <i className="fa-solid fa-print"></i>
-                </button>
-              </div>
-            </div>
-
-            <div className="flex-grow overflow-y-auto p-8 md:p-10 space-y-4 print:p-0">
-              {shoppingList.length > 0 ? (
-                shoppingList.map((item) => (
-                  <div key={item.name} className="flex items-center gap-6 p-6 rounded-[2rem] border border-stone-100 bg-stone-50/50 hover:bg-white transition-all group select-text">
-                     <div className="w-8 h-8 rounded-xl border-2 border-stone-300 flex-shrink-0 group-hover:border-[#3b82f6] transition-colors"></div>
-                     <div className="flex-grow">
-                        <span className="font-black text-stone-800 text-lg md:text-xl tracking-tight block select-text">{item.name}</span>
-                        <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest mt-1">Usado em {item.count} preparo(s)</p>
-                     </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-20">
-                   <i className="fa-solid fa-basket-shopping text-6xl text-stone-100 mb-6"></i>
-                   <p className="text-stone-400 font-bold uppercase tracking-widest text-xs">Adicione receitas ao plano para gerar a lista.</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="p-8 bg-stone-50 text-center border-t border-stone-100">
-               <p className="text-[9px] font-black text-stone-400 uppercase tracking-widest">Dica: Copie a lista e cole no seu WhatsApp ou bloco de notas!</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

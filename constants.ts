@@ -9,164 +9,91 @@ export const WP_CONFIG = {
 export const MOCK_RECIPES: Recipe[] = [
   {
     id: '1',
-    title: 'Smoothie Bowl de Frutas Vermelhas e Chia Antiox',
-    description: 'Um guia completo para um café da manhã rico em antocianinas, focado na regeneração celular e no controle do índice glicêmico matinal.',
+    title: 'Smoothie Bowl de Frutas Vermelhas e Chia Antiox Premium',
+    description: 'Um guia gastronômico completo para um café da manhã funcional, rico em antocianinas e focado na regeneração celular. Esta receita foi desenvolvida para otimizar o metabolismo basal logo nas primeiras horas do dia, utilizando ingredientes com baixo índice glicêmico para evitar picos de insulina e garantir energia prolongada.',
     image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?auto=format&fit=crop&q=80&w=800',
     difficulty: Difficulty.EASY,
-    prepTime: 5,
+    prepTime: 10,
     cookTime: 0,
     servings: 1,
     diet: DietType.VEGAN,
     category: 'Receitas',
-    subcategory: 'Receitas Fitness',
-    ingredients: ['200g de mix de frutas vermelhas', '1 banana congelada', '1 colher de chia', '100ml de leite vegetal'],
-    instructions: [
-      'Bata as frutas congeladas com o leite vegetal até obter uma textura de sorvete.',
-      'A chia deve ser adicionada ao final para preservar as fibras e ômega-3.',
-      'Consuma imediatamente para evitar a oxidação das vitaminas C e E presentes nas frutas.'
+    subcategory: 'Café da Manhã Funcional',
+    ingredients: [
+      '200g de mix de frutas vermelhas (mirtilos, framboesas e morangos)',
+      '1 banana nanica congelada para textura cremosa (prebiótico natural)',
+      '1 colher de sopa de sementes de chia hidratadas em 30ml de água',
+      '100ml de leite de coco artesanal ou amêndoas sem açúcar',
+      '1 pitada de canela do ceilão (termogênico natural)',
+      'Topping: Granola artesanal de baixo carboidrato e sementes de abóbora'
     ],
-    nutrition: { calories: 280, protein: 5, carbs: 42, fat: 7, fiber: 12 },
+    instructions: [
+      'Higienização Crítica: Lave as frutas vermelhas em solução clorada por 15 minutos se forem frescas para garantir a segurança alimentar absoluta.',
+      'Processamento Bioativo: No liquidificador de alta potência, combine as frutas, a banana e o leite vegetal. Bata em velocidade média para preservar as fibras e atingir a consistência de sorbet.',
+      'Hidratação da Chia: A chia deve ser previamente hidratada para formar o gel mucilaginoso que auxilia na saciedade e no controle glicêmico. Incorpore-a delicadamente após o batimento.',
+      'Montagem e Estética: Transfira para um bowl de cerâmica fria. A temperatura baixa ajuda a manter os polifenóis estáveis por mais tempo.',
+      'Finalização Nutricional: Adicione a granola e as sementes. Consuma em até 20 minutos após o preparo para evitar a oxidação das vitaminas termolábeis.'
+    ],
+    nutrition: { calories: 285, protein: 6, carbs: 44, fat: 8, fiber: 14 },
     rating: 4.9,
     reviews: [],
-    author: 'Dra. Aline Nutri'
+    author: 'Dra. Aline Mendes - Nutricionista Clínica (CRN-3 45678)'
   },
   {
     id: '2',
-    title: 'Salmão Grelhado com Amêndoas e Ervas Finas',
-    description: 'Proteína de alto valor biológico com ácidos graxos essenciais. Este prato é um pilar da dieta mediterrânea para saúde cardiovascular.',
+    title: 'Salmão Selvagem em Crosta de Amêndoas e Ervas Finas',
+    description: 'Uma abordagem sofisticada para a ingestão de proteínas de alto valor biológico e ácidos graxos essenciais. Este prato é um pilar da dieta anti-inflamatória mediterrânea, focado na saúde cardiovascular e na redução do estresse oxidativo sistêmico.',
     image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&q=80&w=800',
     difficulty: Difficulty.MEDIUM,
-    prepTime: 10,
+    prepTime: 15,
     cookTime: 15,
     servings: 2,
     diet: DietType.LOW_CARB,
     category: 'Receitas',
-    subcategory: 'Carnes e Peixes',
-    ingredients: ['2 filés de salmão', '50g de amêndoas fatiadas', 'Alecrim fresco', 'Azeite extra virgem'],
-    instructions: [
-      'Tempere o salmão apenas com ervas e pouco sal para manter a pureza do sabor.',
-      'Grelhe em fogo médio para não degradar as gorduras boas do peixe.',
-      'Adicione as amêndoas ao final para garantir a textura crocante e aporte extra de magnésio.'
+    subcategory: 'Almoço Gourmet',
+    ingredients: [
+      '2 filés de salmão (aprox. 180g cada, preferencialmente selvagem)',
+      '60g de farinha de amêndoas grossa ou amêndoas laminadas',
+      'Ramos frescos de alecrim, tomilho e salsa picada',
+      'Azeite de oliva extra virgem com acidez < 0.2%',
+      'Flor de sal e pimenta-do-reino preta moída na hora',
+      'Zestes de limão siciliano para frescor aromático'
     ],
-    nutrition: { calories: 350, protein: 34, carbs: 4, fat: 22, fiber: 3 },
+    instructions: [
+      'Preparação Térmica: Retire o peixe da geladeira 20 minutos antes para que as fibras relaxem e a cocção seja perfeitamente uniforme.',
+      'Crosta Crocante: Misture as amêndoas com as ervas picadas e as raspas de limão em um bowl pequeno, adicionando um fio de azeite para dar liga.',
+      'Selagem Inicial: Tempere o salmão com sal e pimenta. Em uma frigideira antiaderente quente, sele apenas o lado da pele por 3 minutos até ficar crocante.',
+      'Forneamento Técnico: Coloque a crosta sobre o lado superior do peixe e leve ao forno pré-aquecido a 180°C por 8 a 10 minutos.',
+      'Descanso Molecular: Deixe o peixe descansar por 2 minutos fora do forno antes de servir para que os sucos internos se redistribuam.'
+    ],
+    nutrition: { calories: 410, protein: 34, carbs: 6, fat: 28, fiber: 4 },
     rating: 5.0,
     reviews: [],
-    author: 'Chef Gabriel Arcanjo'
-  },
-  {
-    id: '3',
-    title: 'Quinoa Real com Vegetais Mediterrâneos',
-    description: 'Um prato completo que oferece todos os aminoácidos essenciais, ideal para recuperação muscular e saciedade prolongada.',
-    image: 'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&q=80&w=800',
-    difficulty: Difficulty.EASY,
-    prepTime: 15,
-    cookTime: 20,
-    servings: 2,
-    diet: DietType.VEGETARIAN,
-    category: 'Receitas',
-    subcategory: 'Pratos Principais',
-    ingredients: ['1 xícara de quinoa', 'Abobrinha italiana', 'Pimentões coloridos', 'Cebola roxa'],
-    instructions: [
-      'Lave a quinoa para remover a saponina antes do cozimento.',
-      'Asse os vegetais com azeite e orégano para realçar o sabor natural sem excesso de sódio.',
-      'Misture os ingredientes gentilmente para manter a integridade dos grãos.'
-    ],
-    nutrition: { calories: 310, protein: 12, carbs: 45, fat: 9, fiber: 8 },
-    rating: 4.7,
-    reviews: [],
-    author: 'Chef Ricardo Fontes'
-  },
-  {
-    id: '4',
-    title: 'Omelete de Claras com Espinafre e Ricota',
-    description: 'Focado em densidade proteica e baixo valor calórico, este prato é perfeito para quem busca controle de peso com nutrição.',
-    image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&q=80&w=800',
-    difficulty: Difficulty.EASY,
-    prepTime: 5,
-    cookTime: 5,
-    servings: 1,
-    diet: DietType.LOW_CARB,
-    category: 'Receitas',
-    subcategory: 'Café da Manhã',
-    ingredients: ['4 claras', '1 punhado de espinafre', '30g de ricota fresca'],
-    instructions: [
-      'Refogue o espinafre levemente para reduzir o volume e ativar os fitonutrientes.',
-      'Bata as claras até espumar para garantir uma textura aerada e leve.',
-      'Cozinhe em fogo baixo para evitar a formação de compostos indesejados pela queima.'
-    ],
-    nutrition: { calories: 180, protein: 24, carbs: 3, fat: 7, fiber: 2 },
-    rating: 4.9,
-    reviews: [],
-    author: 'Dra. Fernanda Esporte'
-  },
-  {
-    id: '5',
-    title: 'Suco Verde Detox Energizante',
-    description: 'Uma bebida funcional rica em clorofila e magnésio, auxiliando nos processos naturais de desintoxicação do fígado.',
-    image: 'https://images.unsplash.com/photo-1610970882799-64a3e1d20928?auto=format&fit=crop&q=80&w=800',
-    difficulty: Difficulty.EASY,
-    prepTime: 5,
-    cookTime: 0,
-    servings: 1,
-    diet: DietType.VEGAN,
-    category: 'Receitas',
-    subcategory: 'Bebidas e Sucos',
-    ingredients: ['2 folhas de couve', '1 maçã verde', 'Gengibre fresco', 'Limão'],
-    instructions: [
-      'Bata todos os ingredientes com água gelada para manter o frescor dos nutrientes.',
-      'Dica: Não coe o suco para garantir o aporte de fibras essenciais para o intestino.',
-      'O gengibre atua como termogênico natural, acelerando o metabolismo de repouso.'
-    ],
-    nutrition: { calories: 95, protein: 3, carbs: 22, fat: 0, fiber: 5 },
-    rating: 4.8,
-    reviews: [],
-    author: 'Nutri Luiza Costa'
+    author: 'Chef Gabriel Arcanjo - Especialista em Gastronomia Funcional'
   }
 ];
 
 export const MOCK_ARTICLES: Article[] = [
   {
     id: 'a1',
-    title: 'Higiene do Sono: O Guia Definitivo para Performance',
-    excerpt: 'Descubra como o ciclo circadiano e a regulação da melatonina impactam diretamente no seu metabolismo e saúde mental.',
-    content: 'O sono reparador é a base da pirâmide da saúde. ## Importância Metabólica. Durante o sono, o corpo regula hormônios como a grelina e a leptina, que controlam a fome. ## Dicas Práticas. Evite luz azul 2 horas antes de deitar e mantenha a temperatura do quarto amena para facilitar a entrada no sono profundo.',
+    title: 'O Impacto do Ciclo Circadiano na Nutrição e Longevidade',
+    excerpt: 'Entenda como o horário das suas refeições influencia a expressão gênica e a regulação hormonal do emagrecimento.',
+    content: 'A ciência da Crononutrição revela que não é apenas o que comemos, mas QUANDO comemos que determina nossa saúde metabólica. ## A Regulação Hormonal. Durante o dia, nosso corpo está otimizado para a digestão e absorção de nutrientes. À medida que a noite se aproxima, a produção de melatonina inibe a secreção de insulina. ## O Perigo das Refeições Tardias. Jantar muito próximo ao horário de dormir causa uma disrupção metabólica, aumentando o estoque de gordura visceral. ## Dicas Práticas. Tente realizar sua última refeição pelo menos 3 horas antes de deitar e priorize proteínas leves no jantar.',
     image: 'https://images.unsplash.com/photo-1541480601022-2308c0f02487?auto=format&fit=crop&q=80&w=800',
     category: 'Saúde',
-    date: '10 Jun, 2024',
-    readTime: '8 min',
-    author: 'Dr. Marcos Oliveira'
+    date: '15 Jan, 2025',
+    readTime: '12 min',
+    author: 'Dr. Roberto Silva - Endocrinologista'
   },
   {
     id: 'a2',
-    title: 'Caminhada: O Exercício Perfeito para Longevidade',
-    excerpt: 'Por que 30 minutos de caminhada diária são mais eficazes que treinos intensos esporádicos para a saúde do coração.',
-    content: 'A consistência é a chave. ## Benefícios Cardiovasculares. A caminhada reduz a pressão arterial sistólica e melhora a circulação periférica. ## Saúde Mental. O exercício de baixo impacto libera endorfinas de forma sustentada, combatendo o cortisol elevado.',
-    image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&q=80&w=800',
+    title: 'Microbiota Intestinal: O Segundo Cérebro da sua Saúde',
+    excerpt: 'Como as bactérias que habitam seu trato digestivo controlam desde seu humor até sua imunidade e resistência a doenças.',
+    content: 'O intestino abriga trilhões de microrganismos que compõem a microbiota. ## Eixo Intestino-Cérebro. Cerca de 90% da serotonina corporal é produzida no trato gastrointestinal, influenciando diretamente o bem-estar mental. ## Alimentos Probióticos e Prebióticos. Para uma flora saudável, consuma fibras fermentáveis (cebola, alho, banana verde) e alimentos fermentados (kombucha, kefir, chucrute). ## Disbiose e Inflamação. Um desequilíbrio intestinal pode levar à permeabilidade aumentada, permitindo que toxinas entrem na corrente sanguínea.',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1200',
     category: 'Saúde',
-    date: '15 Jul, 2024',
-    readTime: '5 min',
-    author: 'Prof. Lucas Mendes'
-  },
-  {
-    id: 'a3',
-    title: 'Alimentação Anti-inflamatória e Doenças Crônicas',
-    excerpt: 'Como a escolha de alimentos ricos em polifenóis pode silenciar genes inflamatórios no seu organismo.',
-    content: 'A inflamação silenciosa é a causa base de muitas patologias modernas. ## O Papel dos Alimentos. Cúrcuma, azeite e peixes de águas frias são poderosos aliados. ## O Que Evitar. Açúcares refinados e óleos vegetais processados devem ser eliminados da dieta diária.',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
-    category: 'Saúde',
-    date: '20 Ago, 2024',
-    readTime: '10 min',
-    author: 'Dra. Beatriz Nutro'
-  },
-  {
-    id: 'a4',
-    title: 'Neuroplasticidade e Meditação: Mudando o Cérebro',
-    excerpt: 'A ciência por trás do mindfulness e como 8 semanas de prática podem aumentar a massa cinzenta no hipocampo.',
-    content: 'A meditação não é apenas relaxamento, é treinamento cerebral. ## Foco e Atenção. A prática regular fortalece o córtex pré-frontal. ## Resiliência. Aprenda a observar seus pensamentos sem julgamento para reduzir a reatividade ao estresse.',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800',
-    category: 'Bem-Estar',
-    date: '05 Set, 2024',
-    readTime: '6 min',
-    author: 'Psic. Ana Clara Silveira'
+    date: '10 Jan, 2025',
+    readTime: '15 min',
+    author: 'Dra. Beatriz Santos - Gastroenterologista'
   }
 ];

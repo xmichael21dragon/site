@@ -2,4 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /editor
 
+# Permissão específica para o rastreador de anúncios do Google
+User-agent: Mediapartners-Google
+Allow: /
+
 Sitemap: https://saudecomsabor.com.br/sitemap.xml
